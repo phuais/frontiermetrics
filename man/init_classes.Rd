@@ -5,7 +5,6 @@
 \title{Sets the rules to categorize frontier metrics}
 \usage{
 init_classes(
-  x,
   baseline = list(c(5, 10, 55, Inf), c("Low", "Medium", "High")),
   loss = list(c(-Inf, 20, 50, Inf), c("Low", "Medium", "High")),
   fragmentation = list(c(-Inf, 10, 20, Inf), c("Low", "Medium", "High")),
@@ -15,8 +14,6 @@ init_classes(
 )
 }
 \arguments{
-\item{x}{An object of class 'GFW_dataset' generated with \code{\link[=init_fmetrics]{init_fmetrics()}}.}
-
 \item{baseline, loss, fragmentation, speed, activeness, left}{A list defining the
 rules to define discrete classes for each frontier metric. See Details.}
 }
@@ -107,7 +104,7 @@ init_classes()
 #   Old frontiers: last year active in 2015
 #   Emerging frontiers: first year active in 2018
 class_par <- init_classes(baseline = list(c(5, 20, 70, Inf),
-                          c("Low", "Medium", "High"),
+                                          c("Low", "Medium", "High"),
                           activeness = list(old = 2015, emerging = 2018)))
 
 # Shows new defined classes

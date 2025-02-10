@@ -31,3 +31,6 @@
 #' Hansen, M. C., Potapov, P. V., Moore, R., Hancher, M., Turubanova, S. A., Tyukavina, A.,
 #' ... & Townshend, J. R. (2013). High-resolution global maps of 21st-century forest cover change. science, 342(6160), 850-853.
 "GFL_2023_v1.11_loss"
+
+#' URLs to download data for example use.
+"frontiermetrics_data"

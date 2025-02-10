@@ -2,7 +2,6 @@
 #'
 #' Defines rules to generate discrete categories for individual frontier metrics.
 #'
-#' @param x An object of class 'GFW_dataset' generated with [init_fmetrics()].
 #' @param baseline,loss,fragmentation,speed,activeness,left A list defining the
 #' rules to define discrete classes for each frontier metric. See Details.
 #'
@@ -92,7 +91,7 @@
 #' #   Old frontiers: last year active in 2015
 #' #   Emerging frontiers: first year active in 2018
 #' class_par <- init_classes(baseline = list(c(5, 20, 70, Inf),
-#'                           c("Low", "Medium", "High"),
+#'                                           c("Low", "Medium", "High"),
 #'                           activeness = list(old = 2015, emerging = 2018)))
 #'
 #' # Shows new defined classes
@@ -101,8 +100,7 @@
 #' # This object can be passes to [frontiermetrics()] inside the argument
 #' # `classes`, to generate frontier metrics's classes with this new definition
 #' }
-init_classes <- function(x,
-                        baseline = list(c(5, 10, 55, Inf),
+init_classes <- function(baseline = list(c(5, 10, 55, Inf),
                                         c("Low", "Medium", "High")),
                         loss = list(c(-Inf, 20, 50, Inf),
                                     c("Low", "Medium", "High")),
@@ -138,9 +136,6 @@ init_classes <- function(x,
   }
 
   out <- new("FrontierMetric_classes")
-  out@min_cover <- x@min_cover
-  out@min_rate <- x@min_rate
-  out@window <- x@window
   out@baseline <- baseline
   out@loss <- loss
   out@fragmentation <- fragmentation

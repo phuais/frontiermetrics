@@ -37,8 +37,11 @@ argument \code{polygon}.
 # Creates working directory
 dir.create("copo_tiles/")
 
+# Downloads polygon of study area
+download.file(frontiermetrics_data[1], "copo.gpkg")
+
 # Loads polygon of study area
-copo <- terra::vect(system.file("extdata", "copo.gpkg", package = "frontiermetrics"))
+copo <- terra::vect("copo.gpkg")
 
 # Downloads GFW tiles and exports cropped and masked raster layers
 get_gfw(copo, "copo_tiles/")

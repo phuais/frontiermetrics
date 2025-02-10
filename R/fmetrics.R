@@ -45,8 +45,7 @@ dt_append <- function(out, foo){
 #'
 #' The rules to define discrete categories for frontier metrics can
 #' be defined in argument `classes`. This accepts an object of class 'FrontierMetric_classes',
-#' generated with [init_classes()]. Run `init_classes(x)` with `x` equal to an object
-#' of class 'GFW_dataset' to explore these rules and see ?init_classes to
+#' generated with [init_classes()]. Run `init_classes()` to explore these rules and see ?init_classes to
 #' explore how to re-define these categories.
 #'
 #' By default, in the scenario of default definition of frontiers, rules to
@@ -102,6 +101,12 @@ dt_append <- function(out, foo){
 #'
 #' @examples
 #' \dontrun{
+#' # Downloads example of object of class 'GFW_dataset' generated with init_fmetrics()
+#' download.file(frontiermetrics_data[4], "copo_dataset.RDS")
+#'
+#' # Loads object to R environment
+#' copo_dataset <- readRDS("copo_dataset.RDS")
+#'
 #' # Calculates all frontier metrics
 #' copo_metrics <- fmetrics(copo_dataset, metrics = "all", ncores = 2)
 #'
@@ -115,7 +120,7 @@ dt_append <- function(out, foo){
 #' }
 fmetrics <- function(x,
                      metrics = "all",
-                     classes = init_classes(x),
+                     classes = init_classes(),
                      ncores = 1,
                      silent = FALSE){
 

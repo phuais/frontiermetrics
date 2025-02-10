@@ -86,9 +86,15 @@ get_FL <- function(i, gfw_loss, cell_size, aggregation, years, ncores){
 #'
 #' @examples
 #' \dontrun{
+#' # Downloads raster layers generated with function get_gfw()
+#' # Tree cover
+#' download.file(frontiermetrics_data[2], "tree_cover.tif")
+#' # Woodland loss
+#' download.file(frontiermetrics_data[3], "loss_year.tif")
+#'
 #' # Loads raster layers generated with function get_gfw()
-#' gfw_cover <- terra::rast(system.file("extdata", "tree_cover.tif", package = "frontiermetrics"))
-#' gfw_loss <- terra::rast(system.file("extdata", "loss_year.tif", package = "frontiermetrics"))
+#' gfw_cover <- terra::rast("tree_cover.tif")
+#' gfw_loss <- terra::rast("loss_yearr.tif")
 #'
 #' # Generates primary dataset
 #' copo_dataset <- init_fmetrics(gfw_cover, gfw_loss, year_range = c(2000, 2023), ncores = 2)
@@ -269,7 +275,7 @@ init_fmetrics <- function(gfw_cover,
   )
 
   # Filter by frontier activeness and baseline
-  foo_classes <- init_classes(x = out)
+  foo_classes <- init_classes()
   foo_classes@baseline[[1]] <- c(-Inf, 5, Inf)
   foo_classes@baseline[[2]] <- c("Excluded", "Included")
   foo_classes@activeness$old <- year_range[2] - (window + 1)

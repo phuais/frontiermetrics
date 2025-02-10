@@ -137,9 +137,6 @@ setClass("FrontierMetric",
 #' It holds the definition of rules to categorize the values of frontier metrics
 #' into discrete classes.
 #'
-#' @slot min_cover Pre-defined minimum woodland cover during running of [init_fmetrics()].
-#' @slot min_rate Pre-defined minimum woodland loss rate during running of [init_fmetrics()].
-#' @slot window Pre-defined window of years to calculate `min_rate` during running of [init_fmetrics()].
 #' @slot baseline List of rules for frontier metric " baseline woodland".
 #' @slot loss List of rules for frontier metric "woodland loss".
 #' @slot fragmentation List of rules for frontier metric "fragmentation".
@@ -150,9 +147,6 @@ setClass("FrontierMetric",
 #' @export
 setClass("FrontierMetric_classes",
          slots = c(
-           min_cover = "numeric",
-           min_rate = "numeric",
-           window = "numeric",
            baseline = "list",
            loss = "list",
            fragmentation = "list",

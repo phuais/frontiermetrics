@@ -38,6 +38,6 @@ the following names: "baseline_woodland.tif", "woodland_loss.tif,
 }
 \examples{
 \dontrun{
-fmetrics_rast(sierras)
+fmetrics_rast(copo_metrics)
 }
 }

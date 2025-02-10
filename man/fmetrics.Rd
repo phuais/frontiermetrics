@@ -7,7 +7,7 @@
 fmetrics(
   x,
   metrics = "all",
-  classes = init_classes(x),
+  classes = init_classes(),
   ncores = 1,
   silent = FALSE
 )
@@ -59,8 +59,7 @@ The \code{metrics} argument also allows specifying groups of metrics or "frontie
 
 The rules to define discrete categories for frontier metrics can
 be defined in argument \code{classes}. This accepts an object of class 'FrontierMetric_classes',
-generated with \code{\link[=init_classes]{init_classes()}}. Run \code{init_classes(x)} with \code{x} equal to an object
-of class 'GFW_dataset' to explore these rules and see ?init_classes to
+generated with \code{\link[=init_classes]{init_classes()}}. Run \code{init_classes()} to explore these rules and see ?init_classes to
 explore how to re-define these categories.
 
 By default, in the scenario of default definition of frontiers, rules to
@@ -105,6 +104,12 @@ parallelization requires the \code{snowfall} package.
 }
 \examples{
 \dontrun{
+# Downloads example of object of class 'GFW_dataset' generated with init_fmetrics()
+download.file(frontiermetrics_data[4], "copo_dataset.RDS")
+
+# Loads object to R environment
+copo_dataset <- readRDS("copo_dataset.RDS")
+
 # Calculates all frontier metrics
 copo_metrics <- fmetrics(copo_dataset, metrics = "all", ncores = 2)
 

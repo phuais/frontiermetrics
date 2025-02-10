@@ -12,12 +12,6 @@ into discrete classes.
 \section{Slots}{
 
 \describe{
-\item{\code{min_cover}}{Pre-defined minimum woodland cover during running of \code{\link[=init_fmetrics]{init_fmetrics()}}.}
-
-\item{\code{min_rate}}{Pre-defined minimum woodland loss rate during running of \code{\link[=init_fmetrics]{init_fmetrics()}}.}
-
-\item{\code{window}}{Pre-defined window of years to calculate \code{min_rate} during running of \code{\link[=init_fmetrics]{init_fmetrics()}}.}
-
 \item{\code{baseline}}{List of rules for frontier metric " baseline woodland".}
 
 \item{\code{loss}}{List of rules for frontier metric "woodland loss".}

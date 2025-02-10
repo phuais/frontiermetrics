@@ -41,7 +41,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' fmetrics_rast(sierras)
+#' fmetrics_rast(copo_metrics)
 #' }
 fmetrics_rast <- function(x, metrics = "all", dir = NULL, gdal = "TFW=YES", overwrite = TRUE){
 

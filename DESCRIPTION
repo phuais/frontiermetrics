@@ -1,0 +1,48 @@
+Package: frontiermetrics
+Type: Package
+Title: What the Package Does (Title Case)
+Version: 0.0.9
+Authors@R: 
+    person("Pablo Yair", "Huais", , "pablo.huais@unc.edu.ar", role = c("aut", "cre", "cph"),
+           comment = c(ORCID = "0000-0002-4062-0779"))
+Maintainer: Pablo Yair Huais <pablo.huais@unc.edu.ar>
+Description: Provides a toolbox to detect and map high-level patterns of deforestation frontiers. These can be defined as the expansion of woodland loss in a given area with a high level of spatio-temporal detail (Buchadas et al. 2022). We provide functions to calculate, analyze, plot and export deforestation frontier metrics, based on spatio-temporal data provided by Global Forest Watch (Hansen et al. 2013) and a given study area.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Depends: 
+    R (>= 2.10)
+Imports: 
+    data.table (>= 1.15.4),
+    terra (>= 1.8-15),
+    viridis (>= 0.6.5),
+    methods (>= 4.4.2),
+    egg (>= 0.4.5),
+    ggplot2 (>= 3.5.1),
+    landscapemetrics (>= 2.1.1)
+RoxygenNote: 7.3.1
+Collate: 
+    'args_checks.R'
+    'classes.R'
+    'data.R'
+    'edge_density.R'
+    'fm_data_prep.R'
+    'fm_development.R'
+    'fm_severity.R'
+    'fm_spatio_temporal.R'
+    'fmetrics.R'
+    'fmetrics_plot.R'
+    'fmetrics_rast.R'
+    'fmetrics_summary.R'
+    'get_gfw.R'
+    'globals.R'
+    'init_classes.R'
+    'init_fmetrics.R'
+    'methods.R'
+    'utils.R'
+Roxygen: list(markdown = TRUE)
+Suggests: 
+    snowfall,
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

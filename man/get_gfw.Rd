@@ -4,7 +4,7 @@
 \alias{get_gfw}
 \title{Downloads and processes Global Forest Watch tiles}
 \usage{
-get_gfw(polygon, mask = T, dir, timeout = 600)
+get_gfw(polygon, mask = T, dir = "", timeout = 600)
 }
 \arguments{
 \item{polygon}{An object of class 'SpatVector' or a path to a vector file, representing the polygon
@@ -13,7 +13,8 @@ of the study area.}
 \item{mask}{Logical. If TRUE (default) downloaded tiles will be cropped and masked according to the
 boundaries of the provided polygon. Otherwise, the whole tiles will be downloaded.}
 
-\item{dir}{Path to the directory where the processed raster layers will be saved.}
+\item{dir}{Path to the directory where the processed raster layers will be saved. Default is current
+directory.}
 
 \item{timeout}{Maximum time (in seconds) invested in downloading the tiles. Default is 600.}
 }

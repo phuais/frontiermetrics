@@ -30,9 +30,11 @@ check_get_gfw <- function(){
                        "- argument 'dir' must be a path to a directory.")
     what     <- append(what, 2)
   } else {
-    if(!dir.exists(dir)){
-      messages <- append(messages, paste("- the provided directory does not exist: ", dir, "."))
-      what     <- append(what, 2)
+    if(dir != ""){
+      if(!dir.exists(dir)){
+        messages <- append(messages, paste("- the provided directory does not exist: ", dir, "."))
+        what     <- append(what, 2)
+      }
     }
   }
 
@@ -41,6 +43,12 @@ check_get_gfw <- function(){
     messages <- append(messages, paste("- argument 'timeout' must be a positive number (seconds). Default 600 was taken."))
     what     <- append(what, 1)
     timeout  <- 600
+  }
+
+  # overwrite
+  if(!is.logical(overwrite)){
+    messages <- append(messages, paste("- argument 'overwrite' must be logical."))
+    what     <- append(what, 2)
   }
 
   warnings <- messages[which(what == 1)]
@@ -181,12 +189,6 @@ check_fmetrics <- function(){
 check_init_classes <- function(){
   messages <- NULL
   what     <- NULL
-
-  # x
-  if(!is(x, "GFW_dataset")){
-    messages <- append(messages, paste("- argument 'x' must be an object of class 'GFW_dataset' generated with init_fmetrics()."))
-    what     <- append(what, 2)
-  }
 
   if(!is(baseline, "list") || length(baseline) != 2){
     messages <- append(messages, paste("- argument 'baseline' must be a list of two elements. See ?init_classes"))

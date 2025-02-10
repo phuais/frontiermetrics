@@ -106,14 +106,15 @@ calc_fm_fragmentation <- function(x, ncores, classes_sub){
 
   if(ncores > 1){
     # Run in parallel
-    snowfall::sfSetMaxCPUs(ncores)
-    snowfall::sfInit(parallel = T, cpus = ncores, type = "SOCK")
-
-    # Load packages
-    snowfall::sfLibrary(terra)
-    snowfall::sfLibrary(data.table)
-    snowfall::sfLibrary(landscapemetrics)
-    snowfall::sfExport("ed_func")
+    message(paste0("Running in parallel: ", ncores, " CPUs"))
+    capture.output(suppressMessages({
+      snowfall::sfSetMaxCPUs(ncores)
+      snowfall::sfInit(parallel = T, cpus = ncores, type = "SOCK")
+      snowfall::sfLibrary(terra)
+      snowfall::sfLibrary(data.table)
+      snowfall::sfLibrary(landscapemetrics)
+      snowfall::sfExport("ed_func")
+    }))
   }
 
   ds_ed_years <- data.table()
@@ -148,7 +149,7 @@ calc_fm_fragmentation <- function(x, ncores, classes_sub){
       ds_ed_years <- cbind(ds_ed_years, ds_ed[, 2])
     }
   }
-  if(ncores > 1) snowfall::sfStop()
+  if(ncores > 1) suppressMessages(snowfall::sfStop())
   #parabar::stop_backend(backend)
 
   ds_ed_years$ED <- apply(ds_ed_years[, 2:ncol(ds_ed_years)], 1, max)

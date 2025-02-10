@@ -131,10 +131,6 @@ init_classes <- function(baseline = list(c(5, 10, 55, Inf),
     }
   }
 
-  if(baseline[[1]][1] != x@min_cover){
-    stop("The minimum value for baseline differs from the minimum value for the percentage of woodland cover that was set to define a frontier (in x). The rules for the classes for baseline must be redefined.")
-  }
-
   out <- new("FrontierMetric_classes")
   out@baseline <- baseline
   out@loss <- loss

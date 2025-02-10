@@ -7,7 +7,8 @@
 #' of the study area.
 #' @param mask Logical. If TRUE (default) downloaded tiles will be cropped and masked according to the
 #' boundaries of the provided polygon. Otherwise, the whole tiles will be downloaded.
-#' @param dir Path to the directory where the processed raster layers will be saved.
+#' @param dir Path to the directory where the processed raster layers will be saved. Default is current
+#' directory.
 #' @param timeout Maximum time (in seconds) invested in downloading the tiles. Default is 600.
 #'
 #' @details
@@ -39,7 +40,7 @@
 #' # Downloads GFW tiles and exports cropped and masked raster layers
 #' get_gfw(copo, "copo_tiles/")
 #' }
-get_gfw <- function(polygon, mask = T, dir, timeout = 600){
+get_gfw <- function(polygon, mask = T, dir = "", timeout = 600, overwrite = F){
 
   # Argument's checking
   environment(check_get_gfw) <- environment()
@@ -55,6 +56,13 @@ get_gfw <- function(polygon, mask = T, dir, timeout = 600){
     objs <- names(chk)
     for(i in 3:length(chk)){ assign(objs[i], chk[[i]]) }
   }
+
+  if(file.exists("tree_cover.tif"))
+    stop("A file named 'tree_cover.tif' already exists. To overwrite it, set overwrite = TRUE.")
+
+  if(file.exists("loss_year.tif"))
+    stop("A file named 'loss_year.tif' already exists. To overwrite it, set overwrite = TRUE.")
+
 
   prev_timeout <- options()$timeout
   options(timeout = max(timeout, getOption("timeout")))
@@ -83,8 +91,6 @@ get_gfw <- function(polygon, mask = T, dir, timeout = 600){
   if(max_val_y < shp_ext[4]) max_val_y <- max_val_y + 10
 
   dir.create(tmp <- tempfile())
-
-  print(tmp)
 
   # Tree cover in year 2000
   treecover2000_links <- GFL_2023_v1.11_treecover2000[GFL_2023_v1.11_treecover2000$x_min >= min_val_x &
@@ -124,14 +130,14 @@ get_gfw <- function(polygon, mask = T, dir, timeout = 600){
     tcover_rast <- terra::crop(tcover_rast, polygon)
     tcover_rast <- terra::mask(tcover_rast, polygon)
   }
-  terra::writeRaster(tcover_rast, paste0(dir, "tree_cover.tif"))
+  terra::writeRaster(tcover_rast, paste0(dir, "tree_cover.tif"), overwrite = overwrite)
 
   tloss_rast <- terra::vrt(paste0(tmp, "/", files[grepl("lossyear", files)]))
   if(mask){
     tloss_rast <- terra::crop(tloss_rast, polygon)
     tloss_rast <- terra::mask(tloss_rast, polygon)
   }
-  terra::writeRaster(tloss_rast, paste0(dir, "loss_year.tif"))
+  terra::writeRaster(tloss_rast, paste0(dir, "loss_year.tif"), overwrite = overwrite)
 
   # Eliminar carpeta temporal
   unlink(file.path(tmp), recursive = T)
@@ -144,5 +150,5 @@ get_gfw <- function(polygon, mask = T, dir, timeout = 600){
                   "or meaningful outside of these areas."))
   }
 
-  message(paste0("Raster layers successfully processed and downloaded at: ", dir))
+  message("Raster layers were successfully processed and downloaded")
 }

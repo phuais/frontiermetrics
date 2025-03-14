@@ -9,7 +9,7 @@ fmetrics_plot(
   metrics = "all",
   type = "both",
   ncol = 4,
-  palette = c("viridis", "viridis"),
+  palette = "viridis",
   direction = c(1, 1),
   background = c("gray90", "gray64")
 )
@@ -29,9 +29,9 @@ to plot only discrete classes. Default is "both".}
 \item{ncol}{Number of columns to arrange plots. Default is 4.}
 
 \item{palette}{A vector of one or two strings with the names of the palettes to be used
-in the plots. The first element is for the absolute values of frontier metrics and the second for the
-discrete classes. Default is c("viridis", "viridis"). If only one palette is provided,
-the same will be used for both plots. See Details.}
+in the plots. If two strings are provided, the first element is for the absolute values of frontier metrics and the second for the
+discrete classes. Default is \code{"viridis"}. If only one palette is provided,
+the same palette will be used for both plots. See Details.}
 
 \item{direction}{A vector of two integers indicating the direction of the palette
 for the absolute values of frontier metrics and for discrete classes, respectively.

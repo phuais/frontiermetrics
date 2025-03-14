@@ -5,8 +5,8 @@
 \title{Generates primary dataset to develop frontier metrics}
 \usage{
 init_fmetrics(
-  gfw_cover,
-  gfw_loss,
+  raster,
+  is_series = FALSE,
   min_treecover = 10,
   aggregation = c(10, 10),
   year_range = c(2000, 2023),
@@ -17,20 +17,23 @@ init_fmetrics(
 )
 }
 \arguments{
-\item{gfw_cover}{An object of class 'SpatRaster' or 'RasterLayer', or a path
-(string) to a raster layer of tree cover from the GFW database.}
+\item{raster}{If \code{is_series = FALSE}, a list of two objects of class 'SpatRaster',
+or two paths to two raster layers, representing tree cover and woodland loss from
+Global Forest Watch databases. If \code{is_series = TRUE}, an object of class 'SpatRaster', or a path
+to a raster layer, representing a cover time-series. See Details.}
 
-\item{gfw_loss}{An object of class 'SpatRaster' or 'RasterLayer', or a path
-(string) to a raster layer of tree cover from the GFW database.}
+\item{is_series}{Logical. If \code{FALSE} (default), it is expected that the raster
+layers provided in \code{raster} were obtained from Global Forest Watch databases.
+If \code{TRUE}, it is expected that a cover time-series is provided in \code{raster}. See Details.}
 
 \item{min_treecover}{A number (percentage) depicting the minimum percentage of tree
-cover to be considered as "woodland". Default is 10\%. See Details.}
+cover to be considered as "woodland". Default is 10\%. Ignored if \code{is_series = TRUE}. See Details.}
 
 \item{aggregation}{A numeric vector of length two, depicting the first and second
 magnitude of aggregation. See Details.}
 
 \item{year_range}{A numeric vector of two elements depicting the first and last year of the analyzed time-frame.
-Default is c(2000, 2023).}
+Default is c(2000, 2023). Ignored if \code{is_series = TRUE}. See Details.}
 
 \item{min_cover}{A number (percentage) depicting the minimum percentage of woodland
 cover for a cell to be considered a frontier. Default is 5\%. See Details.}
@@ -44,19 +47,46 @@ Default is 5. See Details.}
 \item{ncores}{Numbers of cores to parallelize processes.}
 }
 \value{
-An object of class 'GFW_dataset', containing the primary dataset to
+An object of class 'init_FrontierMetric', containing the primary dataset to
 calculate frontier metrics with \code{\link[=fmetrics]{fmetrics()}}.
 }
 \description{
-Based on inputs of tree cover and tree loss from Global Forest Watch database, generates
-a structured dataset that can be used as main input to calculate frontier
-metrics with function \code{\link[=fmetrics]{fmetrics()}}.
+Based on inputs of tree cover and woodland loss from Global Forest Watch database, or
+on a custom cover time-series, generates a structured dataset that can be used as the main input to calculate frontier
+metrics with \code{\link[=fmetrics]{fmetrics()}}.
 }
 \details{
-Global Forest Watch databases (Hansen et al. 2013) provide the percentage of tree cover in each
-cell. One must define a minimum percentage of tree cover to a cell be considered
-as "woodland". Usually, 10\% is used for subtropical dry forests, and 5\% for
+Deforestation frontier metrics were initially developed to be calculated with Global Forest Watch databases
+(Buchadas et al. 2022; Hansen et al. 2013). If data from Global Forest Watch is used, \code{is_series} must equal
+\code{FALSE}, the value by default. Then, a list with two main raster layers from this source must be provided,
+in the following order:
+
+(1) a raster layer (class SpatRaster or a path to a raster layer) of initial woodland cover in year 2000.
+The values for this raster layer typically ranges
+between 0 and 100, depicting the percentage of tree cover of each individual cell
+(at a resolution of ~30m).
+
+(2) a raster layer (class SpatRaster or a path to a raster layer) of woodland loss between years 2001
+and 2023. This is a single raster layer where 0 indicates no loss, while values of 1, 2, 3, etc.,
+represent woodland loss occurring in years 1, 2, 3, and so on.
+
+Both raster layers can be previously downloaded and processed with \code{\link[=get_gfw]{get_gfw()}}, which will
+access the Global Forest Watch database. See \code{?get_gfw} for detailed
+documentation. One must also define a minimum percentage of tree cover to a cell be considered
+"woodland". Usually, 10\% is used for subtropical dry forests, and 5\% for
 tropical forests.
+
+Alternatively, a custom raster layer representing a time-series of
+woodland cover can be provided. If so, \code{is_series} must equal \code{TRUE}, and
+a raster of multiple layers must be provided in argument \code{raster}.
+Within this object, each layer must be binary, representing the amount of woodland cover for
+each consecutive year of the analyzed time series. A cell of value 1 will be
+considered as covered by woodland, while 0 will be considered as a different
+cover. No other values, besides 0, 1, and NA should be present in each layer.
+In addition, when \code{is_series = TRUE}, argument \code{year_range} must
+represent the first and last year of the time-series. The number of years
+given by this range must match the number of layers of the cover time-series
+provided in \code{raster}.
 
 Aggregation is done in two steps. First, cells are aggregated using the first
 value of the aggregation argument, which represents the number of cells to merge
@@ -74,12 +104,13 @@ and vertically, producing a raster layer with a resolution of
 aggregate these new cells into ~1500m cells (150m * 10).
 
 Frontiers are defined as cells that meet two criteria: (1) they have a minimum
-percentage of woodland cover (min_cover) and (2) they have a minimum average
-annual woodland loss rate in a given temporal window (min_rate). By default, these
-values take 5\% and 0.5\%, respectively (Buchadas et al. 2022). Those cells
+percentage of woodland cover (\code{min_cover}) and (2) they have a minimum average
+annual woodland loss rate in a given temporal window (\code{min_rate}). By default, these
+values take 5\% and 0.5\%, respectively (Buchadas et al. 2022), but they could
+take other values. Those cells
 that do not meet these criteria are excluded from the analysis. Also by default,
-the temporal window is set to five years. However, this window could be set smaller
-(e.g. 2 or 3 years) or bigger (e.g. 7 or 9 years).
+the temporal window is set to five years, but it could also be set to a different
+number of years(e.g. 2, 3, 7 or 9 years).
 }
 \examples{
 \dontrun{
@@ -90,15 +121,16 @@ download.file(frontiermetrics_data[2], "tree_cover.tif")
 download.file(frontiermetrics_data[3], "loss_year.tif")
 
 # Loads raster layers generated with function get_gfw()
-gfw_cover <- terra::rast("tree_cover.tif")
-gfw_loss <- terra::rast("loss_yearr.tif")
+rast_cover <- terra::rast("tree_cover.tif")
+rast_loss <- terra::rast("loss_yearr.tif")
 
 # Generates primary dataset
-copo_dataset <- init_fmetrics(gfw_cover, gfw_loss, year_range = c(2000, 2023), ncores = 2)
+copo_dataset <- init_fmetrics(raster = list(rast_cover, rast_loss), ncores = 2)
 }
 }
 \references{
-Buchadas, A., Baumann, M., Meyfroidt, P., & Kuemmerle, T. (2022). Uncovering major types of deforestation frontiers across the world's tropical dry woodlands. #' Nature Sustainability, 5(7), 619-627.
+Buchadas, A., Baumann, M., Meyfroidt, P., & Kuemmerle, T. (2022). Uncovering major types of deforestation frontiers across the world's tropical dry
+woodlands. Nature Sustainability, 5(7), 619-627.
 
 Hansen, M. C., Potapov, P. V., Moore, R., Hancher, M., Turubanova, S. A., Tyukavina, A.,
 ... & Townshend, J. R. (2013). High-resolution global maps of 21st-century forest cover change. science, 342(6160), 850-853.

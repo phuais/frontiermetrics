@@ -9,7 +9,7 @@ init_classes(
   loss = list(c(-Inf, 20, 50, Inf), c("Low", "Medium", "High")),
   fragmentation = list(c(-Inf, 10, 20, Inf), c("Low", "Medium", "High")),
   speed = list(c(-Inf, 0.05, 0.25, Inf), c("Slow", "Medium", "Fast")),
-  activeness = list(old = 2018, emerging = 2019),
+  activeness = list(old = 2018, emerging = 2019, window = 5),
   left = list(c(-Inf, 33, 66, Inf), c("Low", "Medium", "High"))
 )
 }
@@ -73,14 +73,16 @@ default to define a frontier when running \code{\link[=init_fmetrics]{init_fmetr
 by a frontier was defined with a different threshold in the percentage of initial woodland cover
 when running \code{\link[=init_fmetrics]{init_fmetrics()}}.
 
-The "activeness" metric, which is discrete by definition, requires a list of two elements:
+The "activeness" metric, which is discrete by definition, requires a list of three elements:
 (1) the last year of a given-consecutive year period a frontier was active to be labeled "Old";
 (2) the first year of a given-consecutive year period a frontier became active to be labeled "Emerging".
+(3) An whole number representing the number of years considered in the activeness calculation. This is for
+informational purposes only, as the actual window is set when running \code{\link[=init_fmetrics]{init_fmetrics()}}.
 
 A frontier will be classified as simply "Active" if it was active during any of all given-consecutive
 years between the "Old" and "Emerging" periods.
 
-For instance:
+For instance, by default:
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{activeness = list(old = 2018, emerging = 2019, window = 5)
 }\if{html}{\out{</div>}}
@@ -104,13 +106,13 @@ init_classes()
 #   Old frontiers: last year active in 2015
 #   Emerging frontiers: first year active in 2018
 class_par <- init_classes(baseline = list(c(5, 20, 70, Inf),
-                                          c("Low", "Medium", "High"),
-                          activeness = list(old = 2015, emerging = 2018)))
+                                          c("Low", "Medium", "High")),
+                          activeness = list(old = 2015, emerging = 2018, window = 5))
 
 # Shows new defined classes
 class_par
 
-# This object can be passes to [frontiermetrics()] inside the argument
+# This object can be passes to [fmetrics()] inside the argument
 # `classes`, to generate frontier metrics's classes with this new definition
 }
 }

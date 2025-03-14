@@ -9,10 +9,10 @@ dt_append <- function(out, foo){
 
 #' Calculates frontier metrics
 #'
-#' Given a structured dataset of class 'GFW_dataset', generated with [init_fmetrics()],
-#' calculates frontier metrics following the methodology of Buchadas et al. (2022).
+#' Given a structured dataset of class 'init_FrontierMetric', generated with [init_fmetrics()],
+#' calculates frontier metrics primarily based on Buchadas et al. (2022).
 #'
-#' @param x An object of class 'GFW_dataset' generated with [init_fmetrics()].
+#' @param x An object of class 'init_FrontierMetric' generated with [init_fmetrics()].
 #' @param metrics Frontier metrics to be calculated. Options are: "baseline",
 #' "loss", "fragmentation", "speed", "activeness" and/or "left" for individual
 #' frontier metrics; "severity", "spatio_temporal" and/or "development" for
@@ -30,8 +30,8 @@ dt_append <- function(out, foo){
 #' * loss: The percentage of total woodland loss over the studied time-frame, relative to the baseline woodland cover.
 #' * fragmentation: The maximum value of edge density (m/ha) per year within the studied time-frame.
 #' * speed: The maximum rate of woodland loss (km²/year) during the studied time-frame.
-#' * activeness: Categorized as "active", "old", or "emerging", depending on when the frontier was active through
-#' five consecutive year-periods during the period of analysis.
+#' * activeness: Categorized as "active", "old", or "emerging", depending on when the frontier was active
+#' during the period of analysis.
 #' * left: The percentage of woodland left after the period of woodland loss analysed.
 #'
 #' For detailed explanations of how frontier metrics are calculated, refer to Buchadas et al. (2022).
@@ -101,7 +101,7 @@ dt_append <- function(out, foo){
 #'
 #' @examples
 #' \dontrun{
-#' # Downloads example of object of class 'GFW_dataset' generated with init_fmetrics()
+#' # Downloads example of object of class 'init_FrontierMetric' generated with init_fmetrics()
 #' download.file(frontiermetrics_data[4], "copo_dataset.RDS")
 #'
 #' # Loads object to R environment

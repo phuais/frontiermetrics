@@ -13,7 +13,7 @@ fmetrics(
 )
 }
 \arguments{
-\item{x}{An object of class 'GFW_dataset' generated with \code{\link[=init_fmetrics]{init_fmetrics()}}.}
+\item{x}{An object of class 'init_FrontierMetric' generated with \code{\link[=init_fmetrics]{init_fmetrics()}}.}
 
 \item{metrics}{Frontier metrics to be calculated. Options are: "baseline",
 "loss", "fragmentation", "speed", "activeness" and/or "left" for individual
@@ -33,8 +33,8 @@ An object of class 'FrontierMetric', containing a dataset with the calculated fr
 for each individual cell. This object can be passed to \code{\link[=fmetrics_summary]{fmetrics_summary()}}, \code{\link[=fmetrics_plot]{fmetrics_plot()}}, and \code{\link[=fmetrics_rast]{fmetrics_rast()}}.
 }
 \description{
-Given a structured dataset of class 'GFW_dataset', generated with \code{\link[=init_fmetrics]{init_fmetrics()}},
-calculates frontier metrics following the methodology of Buchadas et al. (2022).
+Given a structured dataset of class 'init_FrontierMetric', generated with \code{\link[=init_fmetrics]{init_fmetrics()}},
+calculates frontier metrics primarily based on Buchadas et al. (2022).
 }
 \details{
 The \code{metrics} argument specifies which frontier metrics will be calculated. These metrics are computed for each cell and are defined as follows:
@@ -43,8 +43,8 @@ The \code{metrics} argument specifies which frontier metrics will be calculated.
 \item loss: The percentage of total woodland loss over the studied time-frame, relative to the baseline woodland cover.
 \item fragmentation: The maximum value of edge density (m/ha) per year within the studied time-frame.
 \item speed: The maximum rate of woodland loss (km²/year) during the studied time-frame.
-\item activeness: Categorized as "active", "old", or "emerging", depending on when the frontier was active through
-five consecutive year-periods during the period of analysis.
+\item activeness: Categorized as "active", "old", or "emerging", depending on when the frontier was active
+during the period of analysis.
 \item left: The percentage of woodland left after the period of woodland loss analysed.
 }
 
@@ -104,7 +104,7 @@ parallelization requires the \code{snowfall} package.
 }
 \examples{
 \dontrun{
-# Downloads example of object of class 'GFW_dataset' generated with init_fmetrics()
+# Downloads example of object of class 'init_FrontierMetric' generated with init_fmetrics()
 download.file(frontiermetrics_data[4], "copo_dataset.RDS")
 
 # Loads object to R environment

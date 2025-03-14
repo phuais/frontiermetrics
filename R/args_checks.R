@@ -60,33 +60,97 @@ check_get_gfw <- function(){
   return(out)
 }
 
-check_init_fmetrics <- function(){
+check_to_gfw <- function(){
   messages <- NULL
   what     <- NULL
 
-  # gfw_cover
-  if(!class(gfw_cover) %in% c("RasterLayer", "SpatRaster", "character")){
-    messages <- append(messages, paste0("- argument 'gfw_cover' must be a raster layer or a
-                                          path to a raster layer depicting tree cover from the GFW database. See ?init_fmetrics"))
+  # cover_series
+  if(!class(cover_series) %in% c("SpatRaster", "character", "NULL")){
+    messages <- append(messages, paste0("- argument 'cover_series' must be an object of class 'SpatRaster' with the time
+                                         series of woodland cover for a given time-frame. See ?to_gfw"))
     what     <- append(what, 2)
   }
-  if(is.character(gfw_cover)){
-    if(!file.exists(gfw_cover)){
-      messages <- append(messages, paste0("- could not find raster layer for tree cover (argument 'gfw_cover')."))
+  if(is.character(cover_series)){
+    if(!file.exists(cover_series)){
+      messages <- append(messages, paste0("- could not find the provided file (argument 'cover_series')."))
       what     <- append(what, 2)
     }
   }
 
-  # gfw_loss
-  if(!class(gfw_loss) %in% c("RasterLayer", "SpatRaster", "character")){
-    messages <- append(messages, paste0("- argument 'gfw_loss' must be a raster layer or a
-                                          path to a raster layer depicting tree cover from the GFW database. See ?init_fmetrics"))
+  # overwrite
+  if(!is.logical(overwrite)){
+    messages <- append(messages, paste("- argument 'overwrite' must be logical."))
     what     <- append(what, 2)
   }
-  if(is.character(gfw_loss)){
-    if(!file.exists(gfw_loss)){
-      messages <- append(messages, paste0("- could not find raster layer for tree cover (argument 'gfw_loss')."))
-      what     <- append(what, 2)
+
+  warnings <- messages[which(what == 1)]
+  errors   <- messages[which(what == 2)]
+
+  out <- list(warnings = warnings,
+              errors = errors)
+  return(out)
+}
+
+check_init_fmetrics <- function(){
+  messages <- NULL
+  what     <- NULL
+
+  if(!is.logical(is_series)){
+    messages <- append(messages, paste0("- argument 'is_series' must be logical. See ?init_fmetrics"))
+    what     <- append(what, 2)
+  } else {
+    if(!is_series){
+      if(!is.list(raster)){
+        messages <- append(messages, paste0("- if 'is_series = FALSE, argument 'raster' must be a list with two SpatRaster or two
+                                        path to two raster layers, representing tree cover and woodland loss (in this order) from GFW databases."))
+        what     <- append(what, 2)
+      } else {
+        if(length(raster) != 2){
+          messages <- append(messages, paste0("- if 'is_series = FALSE', argument 'raster' must be a list 'raster' of length 2. See ?init_fmetrics"))
+          what     <- append(what, 2)
+        } else {
+          # tree cover
+          if(!class(raster[[1]]) %in% c("SpatRaster", "character")){
+            messages <- append(messages, paste0("- the first element of the list provided in 'raster' must be a raster layer or a
+                                          path to a raster layer representing tree cover from the GFW database. See ?init_fmetrics"))
+            what     <- append(what, 2)
+          } else {
+            if(is.character(raster[[1]])){
+              if(!file.exists(raster[[1]])){
+                messages <- append(messages, paste0("- could not find raster layer for tree cover (first element of the list provided in 'raster')."))
+                what     <- append(what, 2)
+              }
+            }
+          }
+          # woodland loss
+          if(!class(raster[[2]]) %in% c("SpatRaster", "character")){
+            messages <- append(messages, paste0("- the second element of the list provided in 'raster' must be a raster layer or a
+                                          path to a raster layer representing woodland loss from the GFW database. See ?init_fmetrics"))
+            what     <- append(what, 2)
+          } else {
+            if(is.character(raster[[2]])){
+              if(!file.exists(raster[[2]])){
+                messages <- append(messages, paste0("- could not find raster layer for woodland loss (second element of the list provided in 'raster')."))
+                what     <- append(what, 2)
+              }
+            }
+          }
+        }
+      }
+    } else {
+      # cover series
+      if(!class(raster) %in% c("SpatRaster", "character")){
+        messages <- append(messages, paste0("- if 'is_series = TRUE', argument 'raster' must be a SpatRaster or a path to a raster layer
+      representing cover time-series. See ?init_fmetrics"))
+        what     <- append(what, 2)
+      } else {
+        if(is.character(raster)){
+          if(!file.exists(raster)){
+            messages <- append(messages, paste0("- could not find raster layer for the cover time-series."))
+            what     <- append(what, 2)
+          }
+        }
+      }
     }
   }
 
@@ -146,8 +210,8 @@ check_fmetrics <- function(){
   what     <- NULL
 
   # x
-  if(!is(x, "GFW_dataset")){
-    messages <- append(messages, paste("- argument 'x' must be an object of class 'GFW_dataset' generated with init_fmetrics()."))
+  if(!is(x, "init_FrontierMetric")){
+    messages <- append(messages, paste("- argument 'x' must be an object of class 'init_FrontierMetric' generated with init_fmetrics()."))
     what     <- append(what, 2)
   }
 
@@ -210,8 +274,8 @@ check_init_classes <- function(){
     what     <- append(what, 2)
   }
 
-  if(!is(activeness, "list") || length(activeness) != 2){
-    messages <- append(messages, paste("- argument 'activeness' must be a list of two elements. See ?init_classes"))
+  if(!is(activeness, "list") || length(activeness) != 3){
+    messages <- append(messages, paste("- argument 'activeness' must be a list of three elements. See ?init_classes"))
     what     <- append(what, 2)
   }
 

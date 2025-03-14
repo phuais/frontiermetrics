@@ -5,10 +5,11 @@
 
 setClassUnion("null_rast", c("NULL", "SpatRaster"))
 setClassUnion("null_ds", c("NULL", "data.table"))
+setClassUnion("null_num", c("NULL", "numeric"))
 
-#' Class 'GFW_dataset'
+#' Class 'init_FrontierMetric'
 #'
-#' Objects of class 'GFW_dataset' are generated with [init_fmetrics()], and hold
+#' Objects of class 'init_FrontierMetric' are generated with [init_fmetrics()], and hold
 #' the necessary objects to calculate frontier metrics with [fmetrics()]. The main
 #' object is under `@data`, which is a data frame containing -among other relevant data- the amount of woodland
 #' cover in the first year of the time series, and the amount of woodland loss
@@ -22,6 +23,7 @@ setClassUnion("null_ds", c("NULL", "data.table"))
 #' @slot extent Extent of the study area.
 #' @slot grain Smallest and biggest studied grain (resolution).
 #' @slot aggregation Pre-defined aggregation during running of [init_fmetrics()].
+#' @slot is_series Logical. Whether the dataset was generated with direct databases from Global Forest Watch (FALSE) or from a cover time-series (TRUE).
 #' @slot min_treecover Pre-defined minimum tree cover during running of [init_fmetrics()].
 #' @slot min_cover Pre-defined minimum woodland cover during running of [init_fmetrics()].
 #' @slot min_rate Pre-defined minimum woodland loss rate during running of [init_fmetrics()].
@@ -29,7 +31,7 @@ setClassUnion("null_ds", c("NULL", "data.table"))
 #' @slot excluded_cells Cells excluded for future analysis (not frontiers)
 #'
 #' @export
-setClass("GFW_dataset",
+setClass("init_FrontierMetric",
 
          slots = c(
            # dataset
@@ -57,8 +59,11 @@ setClass("GFW_dataset",
            # first and second aggregation factor
            aggregation = "numeric",
 
+           # was created from a cover time-series?
+           is_series = "logical",
+
            # tree cover threshold
-           min_treecover = "numeric",
+           min_treecover = "null_num",
 
            # woodland cover threshold
            min_cover = "numeric",
@@ -115,7 +120,7 @@ setClass("FrontierMetric",
            aggregation = "numeric",
 
            # tree cover threshold
-           min_treecover = "numeric",
+           min_treecover = "null_num",
 
            # woodland cover threshold
            min_cover = "numeric",

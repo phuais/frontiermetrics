@@ -1,6 +1,10 @@
-get_FL <- function(i, gfw_loss, cell_size, aggregation, years, ncores){
+get_FL <- function(i, rast_loss, cell_size, aggregation, years, ncores, is_series, cover_series){
   cat("\r> Processing year: ", i , " / ", length(years), sep = "")
-  gwf_loss_tmp <- gfw_loss == i
+  if(!is_series){
+    gwf_loss_tmp <- rast_loss == i
+  } else {
+    gwf_loss_tmp <- cover_series[[i]] - cover_series[[i+1]]
+  }
   gwf_loss_tmp <- gwf_loss_tmp * cell_size
   if(aggregation[1] > 1){
     gwf_loss_tmp_agg <- terra::aggregate(gwf_loss_tmp,
@@ -21,20 +25,23 @@ get_FL <- function(i, gfw_loss, cell_size, aggregation, years, ncores){
 
 #' Generates primary dataset to develop frontier metrics
 #'
-#' Based on inputs of tree cover and tree loss from Global Forest Watch database, generates
-#' a structured dataset that can be used as main input to calculate frontier
-#' metrics with function [fmetrics()].
+#' Based on inputs of tree cover and woodland loss from Global Forest Watch database, or
+#' on a custom cover time-series, generates a structured dataset that can be used as the main input to calculate frontier
+#' metrics with [fmetrics()].
 #'
-#' @param gfw_cover An object of class 'SpatRaster' or 'RasterLayer', or a path
-#' (string) to a raster layer of tree cover from the GFW database.
-#' @param gfw_loss An object of class 'SpatRaster' or 'RasterLayer', or a path
-#' (string) to a raster layer of tree cover from the GFW database.
+#' @param raster If `is_series = FALSE`, a list of two objects of class 'SpatRaster',
+#' or two paths to two raster layers, representing tree cover and woodland loss from
+#' Global Forest Watch databases. If `is_series = TRUE`, an object of class 'SpatRaster', or a path
+#' to a raster layer, representing a cover time-series. See Details.
+#' @param is_series Logical. If `FALSE` (default), it is expected that the raster
+#' layers provided in `raster` were obtained from Global Forest Watch databases.
+#' If `TRUE`, it is expected that a cover time-series is provided in `raster`. See Details.
 #' @param min_treecover A number (percentage) depicting the minimum percentage of tree
-#' cover to be considered as "woodland". Default is 10%. See Details.
+#' cover to be considered as "woodland". Default is 10%. Ignored if `is_series = TRUE`. See Details.
 #' @param aggregation A numeric vector of length two, depicting the first and second
 #' magnitude of aggregation. See Details.
 #' @param year_range A numeric vector of two elements depicting the first and last year of the analyzed time-frame.
-#' Default is c(2000, 2023).
+#' Default is c(2000, 2023). Ignored if `is_series = TRUE`. See Details.
 #' @param min_cover A number (percentage) depicting the minimum percentage of woodland
 #' cover for a cell to be considered a frontier. Default is 5%. See Details.
 #' @param min_rate A number (percentage) depicting the minimum average annual woodland loss rate
@@ -44,10 +51,37 @@ get_FL <- function(i, gfw_loss, cell_size, aggregation, years, ncores){
 #' @param ncores Numbers of cores to parallelize processes.
 #'
 #' @details
-#' Global Forest Watch databases (Hansen et al. 2013) provide the percentage of tree cover in each
-#' cell. One must define a minimum percentage of tree cover to a cell be considered
-#' as "woodland". Usually, 10% is used for subtropical dry forests, and 5% for
+#' Deforestation frontier metrics were initially developed to be calculated with Global Forest Watch databases
+#' (Buchadas et al. 2022; Hansen et al. 2013). If data from Global Forest Watch is used, `is_series` must equal
+#' `FALSE`, the value by default. Then, a list with two main raster layers from this source must be provided,
+#' in the following order:
+#'
+#' (1) a raster layer (class SpatRaster or a path to a raster layer) of initial woodland cover in year 2000.
+#' The values for this raster layer typically ranges
+#' between 0 and 100, depicting the percentage of tree cover of each individual cell
+#' (at a resolution of ~30m).
+#'
+#' (2) a raster layer (class SpatRaster or a path to a raster layer) of woodland loss between years 2001
+#' and 2023. This is a single raster layer where 0 indicates no loss, while values of 1, 2, 3, etc.,
+#' represent woodland loss occurring in years 1, 2, 3, and so on.
+#'
+#' Both raster layers can be previously downloaded and processed with [get_gfw()], which will
+#' access the Global Forest Watch database. See `?get_gfw` for detailed
+#' documentation. One must also define a minimum percentage of tree cover to a cell be considered
+#' "woodland". Usually, 10% is used for subtropical dry forests, and 5% for
 #' tropical forests.
+#'
+#' Alternatively, a custom raster layer representing a time-series of
+#' woodland cover can be provided. If so, `is_series` must equal `TRUE`, and
+#' a raster of multiple layers must be provided in argument `raster`.
+#' Within this object, each layer must be binary, representing the amount of woodland cover for
+#' each consecutive year of the analyzed time series. A cell of value 1 will be
+#' considered as covered by woodland, while 0 will be considered as a different
+#' cover. No other values, besides 0, 1, and NA should be present in each layer.
+#' In addition, when `is_series = TRUE`, argument `year_range` must
+#' represent the first and last year of the time-series. The number of years
+#' given by this range must match the number of layers of the cover time-series
+#' provided in `raster`.
 #'
 #' Aggregation is done in two steps. First, cells are aggregated using the first
 #' value of the aggregation argument, which represents the number of cells to merge
@@ -65,19 +99,21 @@ get_FL <- function(i, gfw_loss, cell_size, aggregation, years, ncores){
 #' aggregate these new cells into ~1500m cells (150m * 10).
 #'
 #' Frontiers are defined as cells that meet two criteria: (1) they have a minimum
-#' percentage of woodland cover (min_cover) and (2) they have a minimum average
-#' annual woodland loss rate in a given temporal window (min_rate). By default, these
-#' values take 5% and 0.5%, respectively (Buchadas et al. 2022). Those cells
+#' percentage of woodland cover (`min_cover`) and (2) they have a minimum average
+#' annual woodland loss rate in a given temporal window (`min_rate`). By default, these
+#' values take 5% and 0.5%, respectively (Buchadas et al. 2022), but they could
+#' take other values. Those cells
 #' that do not meet these criteria are excluded from the analysis. Also by default,
-#' the temporal window is set to five years. However, this window could be set smaller
-#' (e.g. 2 or 3 years) or bigger (e.g. 7 or 9 years).
+#' the temporal window is set to five years, but it could also be set to a different
+#' number of years(e.g. 2, 3, 7 or 9 years).
 #'
 #' @return
-#' An object of class 'GFW_dataset', containing the primary dataset to
+#' An object of class 'init_FrontierMetric', containing the primary dataset to
 #' calculate frontier metrics with [fmetrics()].
 #'
 #' @references
-#' Buchadas, A., Baumann, M., Meyfroidt, P., & Kuemmerle, T. (2022). Uncovering major types of deforestation frontiers across the world's tropical dry woodlands. #' Nature Sustainability, 5(7), 619-627.
+#' Buchadas, A., Baumann, M., Meyfroidt, P., & Kuemmerle, T. (2022). Uncovering major types of deforestation frontiers across the world's tropical dry
+#' woodlands. Nature Sustainability, 5(7), 619-627.
 #'
 #' Hansen, M. C., Potapov, P. V., Moore, R., Hancher, M., Turubanova, S. A., Tyukavina, A.,
 #' ... & Townshend, J. R. (2013). High-resolution global maps of 21st-century forest cover change. science, 342(6160), 850-853.
@@ -93,14 +129,14 @@ get_FL <- function(i, gfw_loss, cell_size, aggregation, years, ncores){
 #' download.file(frontiermetrics_data[3], "loss_year.tif")
 #'
 #' # Loads raster layers generated with function get_gfw()
-#' gfw_cover <- terra::rast("tree_cover.tif")
-#' gfw_loss <- terra::rast("loss_yearr.tif")
+#' rast_cover <- terra::rast("tree_cover.tif")
+#' rast_loss <- terra::rast("loss_yearr.tif")
 #'
 #' # Generates primary dataset
-#' copo_dataset <- init_fmetrics(gfw_cover, gfw_loss, year_range = c(2000, 2023), ncores = 2)
+#' copo_dataset <- init_fmetrics(raster = list(rast_cover, rast_loss), ncores = 2)
 #' }
-init_fmetrics <- function(gfw_cover,
-                          gfw_loss,
+init_fmetrics <- function(raster,
+                          is_series = FALSE,
                           min_treecover = 10,
                           aggregation = c(10, 10),
                           year_range = c(2000, 2023),
@@ -128,52 +164,68 @@ init_fmetrics <- function(gfw_cover,
     }
   }
 
+  if(!is_series){
+    if(all(year_range != c(2000, 2023))){
+      stop("Argument 'year_range' must equal c(2000, 2023) (default) when 'is_series = FALSE'. See ?init_fmetrics")
+    }
+    rast_cover <- raster[[1]]
+    rast_loss <- raster[[2]]
+    if(is.character(rast_cover)) rast_cover <- terra::rast(rast_cover)
+    if(is.character(rast_loss)) rast_loss <- terra::rast(rast_loss)
+    } else {
+    rast_cover <- raster
+    rast_loss <- NULL
+    if(is.character(rast_cover)) rast_cover <- terra::rast(rast_cover)
+    if(dim(rast_cover)[3] != length(year_range[1]:year_range[2])){
+      stop("The number of raster layers in 'raster' does not match the number of years given the provided 'year_range'. See ?init_fmetrics")
+    }
+  }
+
   terra_progress_bar <- terra::terraOptions(print = FALSE)$progress
   terra::terraOptions(progress = 0, print = FALSE)
 
-  # Load raster layers if paths are provided
-  if (is.character(gfw_cover)) {
-    gfw_cover <- terra::rast(gfw_cover)
-  }
-  if (is.character(gfw_loss)) {
-    gfw_loss <- terra::rast(gfw_loss)
-  }
-
   # Transform to epsg:4326 if necessary
-  gfw_cover <- crs_transform(gfw_cover)
-  gfw_loss <- crs_transform(gfw_loss)
+  rast_cover <- crs_transform(rast_cover)
+  if(!is_series) rast_loss <- crs_transform(rast_loss)
 
-  if(any(abs(terra::ext(gfw_cover)[3:4]) > 35)){
+  if(any(abs(terra::ext(rast_cover)[3:4]) > 35)){
     warning(paste("The study area extends beyond the latitude limits of tropical and subtropical regions (35\u00b0).",
                   "\nFrontier metrics were designed with these regions in mind, so the results may not be applicable",
                   "or meaningful outside of the mentioned ranges."))
   }
 
-  gfw_loss <- gfw_loss[gfw_cover >= min_treecover, drop = F]
-  gfw_cover <- gfw_cover >= min_treecover
-  cell_size <- terra::cellSize(gfw_cover, unit = "km")
-  gfw_cover <- gfw_cover * cell_size
+  if(!is_series){
+    #rast_loss <- rast_loss[rast_cover >= min_treecover, drop = F]
+    rast_loss[!rast_cover >= min_treecover] <- 0
+    rast_cover <- rast_cover >= min_treecover
+    cover_series <- NULL
+  } else {
+    cover_series <- rast_cover
+    rast_cover <- cover_series[[1]]
+  }
+  cell_size <- terra::cellSize(rast_cover, unit = "km")
+  rast_cover <- rast_cover * cell_size
   if(aggregation[1] > 1){
-    gfw_cover_1 <- terra::aggregate(
-      gfw_cover,
+    rast_cover_1 <- terra::aggregate(
+      rast_cover,
       fact = aggregation[1],
       fun = sum,
       cores = ncores,
       na.rm = T)
   } else {
-    gfw_cover_1 <- gfw_cover
+    rast_cover_1 <- rast_cover
   }
   # Shrink rasters to adapt to aggregation
-  gfw_cover_1 <- gfw_cover_1[1:(dim(gfw_cover_1)[1] - dim(gfw_cover_1)[1] %% aggregation[2]),
-                             1:(dim(gfw_cover_1)[2] - dim(gfw_cover_1)[2] %% aggregation[2]), drop = F]
-  dat <- as.data.frame(gfw_cover_1,
+  rast_cover_1 <- rast_cover_1[1:(dim(rast_cover_1)[1] - dim(rast_cover_1)[1] %% aggregation[2]),
+                             1:(dim(rast_cover_1)[2] - dim(rast_cover_1)[2] %% aggregation[2]), drop = F]
+  dat <- as.data.frame(rast_cover_1,
                        xy = T,
                        cells = T,
                        na.rm = F)
   dat <- as.data.table(dat)
 
-  x_sides <- dim(gfw_cover_1)[1] / aggregation[2]
-  y_sides <- dim(gfw_cover_1)[2] / aggregation[2]
+  x_sides <- dim(rast_cover_1)[1] / aggregation[2]
+  y_sides <- dim(rast_cover_1)[2] / aggregation[2]
   vec <- vector("numeric")
   init <- 1
   end <- y_sides
@@ -217,15 +269,19 @@ init_fmetrics <- function(gfw_cover,
                  "y_1",
                  paste0("FC_", year_range[1])), with = F]
 
+  # Calculating woodland loss
+
   years <- (year_range[1] + 1):year_range[2]
 
   results <- lapply(1:length(years),
                     get_FL,
-                    gfw_loss,
+                    rast_loss,
                     cell_size,
                     aggregation,
                     years,
-                    ncores)
+                    ncores,
+                    is_series,
+                    cover_series)
 
   # Merge into a dataframe
   for(i in 1:length(results)){
@@ -254,19 +310,22 @@ init_fmetrics <- function(gfw_cover,
   colnames(rr) <- c("id_cell", "cell_area")
   coords <- merge(coords, rr, by = "id_cell")
 
+  if(is_series) min_treecover <- NULL
+
   out <- new(
-    "GFW_dataset",
+    "init_FrontierMetric",
     data = dat,
     coords = coords,
     year_range = year_range,
     initial_fc_col = paste0("FC_", year_range[1]),
     fl_cols = colnames(dat)[8:ncol(dat)],
-    extent = as.vector(terra::ext(gfw_cover_1)),
+    extent = as.vector(terra::ext(rast_cover_1)),
     grain = list(
-      terra::res(gfw_cover_1),
-      terra::res(gfw_cover_1) * aggregation[2]
+      terra::res(rast_cover_1),
+      terra::res(rast_cover_1) * aggregation[2]
     ),
     aggregation = aggregation,
+    is_series = is_series,
     min_treecover = min_treecover,
     min_cover = min_cover,
     min_rate = min_rate,

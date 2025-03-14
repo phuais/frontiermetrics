@@ -34,7 +34,7 @@
 #' "all" to calculate all frontier metrics available within `x`. Default is "all".
 #' @param dir Path to the directory where to export raster layers.
 #' @param gdal GDAL driver specific datasource creation options. See the GDAL documentation.
-#' @param overwrite logical. If `TRUE`, files will be overwritten.
+#' @param overwrite Logical. If `TRUE`, files will be overwritten.
 #'
 #' @return Invisible, it exports raster layers as .tif files.
 #' @export

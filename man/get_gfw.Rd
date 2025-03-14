@@ -4,32 +4,34 @@
 \alias{get_gfw}
 \title{Downloads and processes Global Forest Watch tiles}
 \usage{
-get_gfw(polygon, mask = T, dir = "", timeout = 600)
+get_gfw(polygon, mask = TRUE, dir = "", overwrite = FALSE, timeout = 600)
 }
 \arguments{
 \item{polygon}{An object of class 'SpatVector' or a path to a vector file, representing the polygon
 of the study area.}
 
 \item{mask}{Logical. If TRUE (default) downloaded tiles will be cropped and masked according to the
-boundaries of the provided polygon. Otherwise, the whole tiles will be downloaded.}
+boundaries of the provided polygon. Otherwise, the whole tiles will be kept.}
 
 \item{dir}{Path to the directory where the processed raster layers will be saved. Default is current
 directory.}
+
+\item{overwrite}{Logical. If \code{TRUE}, files will be overwritten.}
 
 \item{timeout}{Maximum time (in seconds) invested in downloading the tiles. Default is 600.}
 }
 \value{
 Exports cropped and masked raster layers from GFW databases, one for tree cover
-and another for tree loss, based on the polygon provided in argument \code{polygon}.
+and another for woodland loss, based on the polygon provided in argument \code{polygon}.
 }
 \description{
 Downloads all overlapping tiles from Global Forest Watch database (Hansen et al. 2013), based on the
-extent of a user-provided polygon.
+extent of a user-provided polygon, and exports raster layers of tree cover and woodland loss.
 }
 \details{
-Downloaded tiles are classified as follows: (1) raster layers depicting the tree cover
-in the year 2000, and (2) raster layers depicting the tree loss in the following years
-until the last updated year available. Tiles of the same type (tree cover or tree loss)
+Downloaded tiles are classified as follows: (1) raster layer depicting the tree cover
+in the year 2000, and (2) raster layer depicting the woodland loss in the following years
+until 2023. Tiles of the same type (tree cover or woodland loss)
 are merged, then cropped and masked based on the on the polygon provided in
 argument \code{polygon}.
 }
@@ -39,13 +41,13 @@ argument \code{polygon}.
 dir.create("copo_tiles/")
 
 # Downloads polygon of study area
-download.file(frontiermetrics_data[1], "copo.gpkg")
+download.file(frontiermetrics_data[1], dir = "copo.gpkg")
 
 # Loads polygon of study area
 copo <- terra::vect("copo.gpkg")
 
 # Downloads GFW tiles and exports cropped and masked raster layers
-get_gfw(copo, "copo_tiles/")
+get_gfw(polygon = copo, dir = "copo_tiles/")
 }
 }
 \references{

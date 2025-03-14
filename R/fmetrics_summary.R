@@ -127,7 +127,8 @@ fmetrics_summary <- function(x, metrics = "all"){
                         metric_abb = c("Wct0", "Sp", "PTWl", "Wleft", "ED"))
   cc_mets <- cc_mets[which(cc_mets$metric %in% metrics), "metric_abb"]
 
-  dd <- melt(x@data[, c("id_cell", cc_mets), with = F], idvar = "id_cell", measure.vars = list(2:length(cols)))
+  dd <- data.table::melt(x@data[, c("id_cell", cc_mets), with = F],
+                         idvar = "id_cell", measure.vars = 2:(length(cc_mets)+1))
   dd_labels <- data.frame(time = c("baseline", "loss", "speed", "fragmentation", "left"),
                           variable = c("Wct0", "PTWl", "Sp", "ED", "Wleft"),
                           label = c("Baseline woodland [%]", "Woodland loss [%]", "Speed [km\u00b2/year]",

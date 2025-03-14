@@ -4,15 +4,15 @@
 if(!isGeneric("show"))
   methods::setGeneric("show", function(object) standardGeneric("show"))
 
-#' Show 'GFW_dataset' object
+#' Show 'init_FrontierMetric' object
 #'
 #' @param object Prints relevant information about a 'FrontierMetric' object.
 #'
 #' @export
-methods::setMethod(f = "show", signature = "GFW_dataset",
+methods::setMethod(f = "show", signature = "init_FrontierMetric",
                    definition =
                      function(object){
-                       cat("Class               : GFW_dataset\n")
+                       cat("Class               : init_FrontierMetric\n")
                        cat("Time-frame          : ", object@year_range[1], " - ", object@year_range[2], "\n", sep = "")
                        if(round(object@grain[[1]][1], digits = 10) == round(object@grain[[1]][2], digits = 10)){
                          met <- round(object@grain[[1]][1]*111120.0000012, digits = 1)
@@ -79,11 +79,9 @@ methods::setMethod(f = "show", signature = "FrontierMetric_classes",
                        cat("Speed [km\U00B2/year]:\n")
                        cat(ff_show_classes(object@speed), "\n\n")
                        # Activeness
-                       cat("Activeness:\n")
                        k <- object@activeness
-                       window <- object@window
-
-
+                       window <- k$window
+                       cat("Activeness (window = ", window,"):\n", sep = "")
                        cat("  Old       ",
                            paste0("... ,[",(k[[1]]-window-1), ",", (k[[1]]-2),"], [",
                                   (k[[1]]-window), ",", (k[[1]]-1), "], [",
@@ -94,12 +92,8 @@ methods::setMethod(f = "show", signature = "FrontierMetric_classes",
                                   (k[[2]]-1), ",", (k[[2]])+(window-2), "]\n"),
                            "  Emerging  ",
                            paste0("[", k[[2]], ",", k[[2]]+(window-1), "]\n\n"), sep = "")
-
-
-
-
                        cat("Woodland left [%]:\n")
-                       cat(ff_show_classes(object@left), "\n\n")
+                       cat(ff_show_classes(object@left))
                      }
 )
 

@@ -24,7 +24,7 @@ metrics; "severity", "spatio_temporal" and/or "development" for frontier typolog
 
 \item{gdal}{GDAL driver specific datasource creation options. See the GDAL documentation.}
 
-\item{overwrite}{logical. If \code{TRUE}, files will be overwritten.}
+\item{overwrite}{Logical. If \code{TRUE}, files will be overwritten.}
 }
 \value{
 Invisible, it exports raster layers as .tif files.

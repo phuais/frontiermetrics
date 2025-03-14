@@ -1,12 +1,12 @@
 Package: frontiermetrics
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Deforestation Frontier Metrics
 Version: 0.0.9
 Authors@R: 
     person("Pablo Yair", "Huais", , "pablo.huais@unc.edu.ar", role = c("aut", "cre", "cph"),
            comment = c(ORCID = "0000-0002-4062-0779"))
 Maintainer: Pablo Yair Huais <pablo.huais@unc.edu.ar>
-Description: Provides a toolbox to detect and map high-level patterns of deforestation frontiers. These can be defined as the expansion of woodland loss in a given area with a high level of spatio-temporal detail (Buchadas et al. 2022). We provide functions to calculate, analyze, plot and export deforestation frontier metrics, based on spatio-temporal data provided by Global Forest Watch (Hansen et al. 2013) and a given study area.
+Description: Provides a toolbox to detect and map high-level patterns of deforestation frontiers. These can be defined as the expansion of woodland loss in a given area with a high level of spatio-temporal detail Buchadas et al. (2022) <doi:10.1038/s41893-022-00886-9>. We provide functions to calculate, analyze, plot and export deforestation frontier metrics, based on spatio-temporal data of woodland loss and a given study area.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
@@ -46,3 +46,5 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+URL: https://github.com/phuais/frontiermetrics
+BugReports: https://github.com/phuais/frontiermetrics/issues

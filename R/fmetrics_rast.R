@@ -43,7 +43,7 @@
 #' \dontrun{
 #' fmetrics_rast(copo_metrics)
 #' }
-fmetrics_rast <- function(x, metrics = "all", dir = NULL, gdal = "TFW=YES", overwrite = TRUE){
+fmetrics_rast <- function(x, metrics = "all", dir = NULL, gdal = NULL, overwrite = TRUE){
 
   data_to_raster <- function(dd, mm_name = NULL){
     if(!is.numeric(dd[[3]])){

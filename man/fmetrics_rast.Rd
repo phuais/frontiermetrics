@@ -4,13 +4,7 @@
 \alias{fmetrics_rast}
 \title{Exports raster layers of frontier metrics}
 \usage{
-fmetrics_rast(
-  x,
-  metrics = "all",
-  dir = NULL,
-  gdal = "TFW=YES",
-  overwrite = TRUE
-)
+fmetrics_rast(x, metrics = "all", dir = NULL, gdal = NULL, overwrite = TRUE)
 }
 \arguments{
 \item{x}{An object of class 'FrontierMetric' generated with \code{\link[=fmetrics]{fmetrics()}}}

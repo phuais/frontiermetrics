@@ -1,0 +1,56 @@
+Package: frontiermetrics
+Type: Package
+Title: Deforestation Frontier Metrics
+Version: 0.0.9
+Authors@R: 
+    person("Pablo Yair", "Huais", , "pablo.huais@unc.edu.ar", role = c("aut", "cre", "cph"),
+           comment = c(ORCID = "0000-0002-4062-0779"))
+Maintainer: Pablo Yair Huais <pablo.huais@unc.edu.ar>
+Description: Provides a toolbox to detect and map high-level patterns of deforestation frontiers. These can be defined as the expansion of forest loss in a given area with a high level of spatio-temporal detail Buchadas et al. (2022) <doi:10.1038/s41893-022-00886-9>. We provide functions to calculate, analyze, plot and export deforestation frontier metrics, based on spatio-temporal data of woodland loss and a given study area.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Depends: 
+    R (>= 3.5)
+Imports: 
+    data.table (>= 1.15.4),
+    terra (>= 1.8-15),
+    viridis (>= 0.6.5),
+    methods (>= 4.4.0),
+    egg (>= 0.4.5),
+    ggplot2 (>= 3.5.1),
+    landscapemetrics (>= 2.1.1),
+    BAMMtools
+RoxygenNote: 7.3.2
+Collate: 
+    'args_checks.R'
+    'breaks_rules.R'
+    'classes.R'
+    'data.R'
+    'edge_density.R'
+    'fm_activeness.R'
+    'fm_baseline.R'
+    'fm_baseline_frag.R'
+    'fm_forestleft.R'
+    'fm_forestloss.R'
+    'fm_loss_frag.R'
+    'fm_onset.R'
+    'fm_speed.R'
+    'fmetrics.R'
+    'fmetrics_plot.R'
+    'fmetrics_rast.R'
+    'fmetrics_summary.R'
+    'get_gfw.R'
+    'globals.R'
+    'init_fmetrics.R'
+    'methods.R'
+    'ud_metric.R'
+    'utils.R'
+Roxygen: list(markdown = TRUE)
+Suggests: 
+    snowfall,
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+URL: https://github.com/phuais/frontiermetrics
+BugReports: https://github.com/phuais/frontiermetrics/issues

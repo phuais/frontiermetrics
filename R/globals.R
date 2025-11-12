@@ -1,0 +1,11 @@
+utils::globalVariables(c("na.omit", ".SD", "id_cell", "terra", "landscapemetrics",
+                         ".", "gfw_cover", "gfw_loss", "aggregation",
+                         "min_treecover", "min_cover", "min_rate", "window", "time_frame",
+                         "ncores", "x", "metrics", "type", "baseline", "loss", "fragmentation",
+                         "speed", "activeness", "left", "classes", "mask", "..new_cols",
+                         "pad_raster_internal", "xmin", "xmax", "ymin", "ymax", "x_cell",
+                         "y_cell", "..col", "melt", "cols", "value", "count", "GFL_2023_v1.11_treecover2000",
+                         "GFL_2023_v1.11_loss", "..new_cols", "GFL_2023_v1.11_loss",
+                         "aggregate", "download.file", "loess", "new", "polygon", "quantile", "reshape", "sd",
+                         "approach", "capture.output", "cover_series", "init_cover", "loss_series", "overwrite",
+                         "raster", "is_series"))

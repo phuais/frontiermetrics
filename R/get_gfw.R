@@ -120,7 +120,9 @@ get_gfw <- function(study_area,
   for(i in 1:nrow(treecover2000_links)){
     message(paste0("Tile ", i, "/" , nrow(treecover2000_links)))
     filename1 <- substring(treecover2000_links[i, 1], first = 74, last = nchar(treecover2000_links[i, 1])-4)
-    download.file(treecover2000_links[i, 1], destfile = paste0(tmp, "/", filename1, ".tif"))
+    # download.file(treecover2000_links[i, 1], destfile = paste0(tmp, "/", filename1, ".tif"))
+    curl::curl_download(url = treecover2000_links[i, 1],
+      destfile = paste0(normalizePath(tmp, winslash = "/"), "/", filename1, ".tif"))
   }
 
   # Tree loss
@@ -134,7 +136,9 @@ get_gfw <- function(study_area,
   for(i in 1:nrow(treeloss_links)){
     message(paste0("Tile ", i, "/" , nrow(treeloss_links)))
     filename2 <- substring(treeloss_links[i, 1], first = 74, last = nchar(treeloss_links[i, 1])-4)
-    download.file(treeloss_links[i, 1], destfile = paste0(tmp, "/", filename2, ".tif"))
+    # download.file(treeloss_links[i, 1], destfile = paste0(tmp, "/", filename2, ".tif"))
+    curl::curl_download(url = treeloss_links[i, 1],
+                        destfile = paste0(normalizePath(tmp, winslash = "/"), "/", filename2, ".tif"))
   }
 
   # Mergear y cropear

@@ -20,7 +20,8 @@ Imports:
     egg (>= 0.4.5),
     ggplot2 (>= 3.5.1),
     landscapemetrics (>= 2.1.1),
-    BAMMtools
+    BAMMtools,
+    curl
 RoxygenNote: 7.3.2
 Collate: 
     'args_checks.R'

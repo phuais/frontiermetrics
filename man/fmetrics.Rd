@@ -60,11 +60,12 @@ The \code{metrics} argument specifies which frontier metrics will be calculated.
 \item baseline: The percentage of forest cover in each cell in the first year of the time-frame.
 \item baseline_frag: The value of edge density (m/ha) in the first year of the time-frame.
 \item loss: The percentage of total forest loss over the studied time-frame, relative to the baseline forest cover.
-\item loss_frag: The maximum value of edge density (m/ha) per year within the studied time-frame.
+\item loss_frag: The maximum value of edge density (m/ha) per year of the forest loss spatial pattern, within the studied time-frame.
 \item speed: The maximum rate of forest loss (km²/year) during the studied time-frame.
-\item activeness: The level of activeness, as discrete categories, accoding to wheb the frontier was active
+\item activeness: The level of activeness, as discrete categories, according to when the frontier was active
 during the period of analysis.
-\item left: The percentage of forest cover left after at the end of the studied time-series.
+\item left: The percentage of forest cover left after at the end of the studied time-series, relative to the
+area of the cell.
 \item onset: The year of onset of the deforestation frontier, calculated as the
 first year with at least 3 years (by default) of consecutive forest loss.
 }

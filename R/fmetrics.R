@@ -107,11 +107,12 @@ get_archetypes <- function(out){
 #' * baseline: The percentage of forest cover in each cell in the first year of the time-frame.
 #' * baseline_frag: The value of edge density (m/ha) in the first year of the time-frame.
 #' * loss: The percentage of total forest loss over the studied time-frame, relative to the baseline forest cover.
-#' * loss_frag: The maximum value of edge density (m/ha) per year within the studied time-frame.
+#' * loss_frag: The maximum value of edge density (m/ha) per year of the forest loss spatial pattern, within the studied time-frame.
 #' * speed: The maximum rate of forest loss (km²/year) during the studied time-frame.
-#' * activeness: The level of activeness, as discrete categories, accoding to wheb the frontier was active
+#' * activeness: The level of activeness, as discrete categories, according to when the frontier was active
 #' during the period of analysis.
-#' * left: The percentage of forest cover left after at the end of the studied time-series.
+#' * left: The percentage of forest cover left after at the end of the studied time-series, relative to the
+#' area of the cell.
 #' * onset: The year of onset of the deforestation frontier, calculated as the
 #' first year with at least 3 years (by default) of consecutive forest loss.
 #'

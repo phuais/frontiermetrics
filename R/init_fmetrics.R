@@ -105,7 +105,7 @@ get_FL <- function(i, rast_loss, cell_size, aggregation, years, ncores, is_serie
 #' each cell from the initial aggregation is merged into larger cells,
 #' which will serve as the basis for calculating frontier metrics. Since GFW raster layers have a resolution of approximately 30m (at the equator),
 #' setting `aggregation = c(10, 10)` (default setting) will: (1) aggregate 10 cells both horizontally
-#' and vertically, producing a raster layer with a resolution of
+#' and vertically, producing cells of
 #' ~300m, and (2) further aggregate these newly aggregated cells by a factor of
 #' 10, creating larger cells with a resolution of ~3000m. For instance, setting
 #' `aggregation = c(5, 10)` will first aggregate to ~150m cells (30 * 5), then

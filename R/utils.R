@@ -21,3 +21,17 @@ cols_reorder <- function(x, cols_obj, positions){
   return(x)
 }
 
+correct_path <- function(dir){
+  repeat{
+    c <- substr(dir, 1, 1)
+    if(c == "/"){
+      dir <- substr(dir, 2, nchar(dir))
+    } else {
+      break
+    }
+  }
+  dir
+}
+
+
+

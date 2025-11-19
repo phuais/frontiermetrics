@@ -12,6 +12,7 @@
 #' boundaries of the provided extent or polygon in `study_area`. Otherwise, the whole tiles will be kept.
 #' @param overwrite Logical. If `TRUE`, files will be overwritten.
 #' @param timeout Maximum time (in seconds) invested in downloading the tiles. Default is 600.
+#' @param silent Logical. If `TRUE`, suppresses messages. Default is `FALSE`.
 #'
 #' @details
 #' The downloaded tiles include: (1) a raster layer of tree cover for the year 2000,
@@ -31,22 +32,23 @@
 #' @examples
 #' \dontrun{
 #' # Creates working directory
-#' dir.create("copo_tiles/")
+#' dir.create("copo_tiles")
 #'
 #' # Downloads study_area of study area
-#' download.file(frontiermetrics_data[1], dir = "copo.gpkg")
+#' curl::curl_download(frontiermetrics_data[1], "copo.gpkg")
 #'
 #' # Loads study_area of study area
 #' copo <- terra::vect("copo.gpkg")
 #'
 #' # Downloads GFW tiles and exports cropped and masked raster layers
-#' get_gfw(study_area = copo, dir = "copo_tiles/")
+#' get_gfw(study_area = copo, dir = "copo_tiles")
 #' }
 get_gfw <- function(study_area,
                     dir = "",
                     mask = TRUE,
                     overwrite = FALSE,
-                    timeout = 600){
+                    timeout = 600,
+                    silent = FALSE){
 
   # Argument's checking
   environment(check_get_gfw) <- environment()
@@ -61,6 +63,13 @@ get_gfw <- function(study_area,
   } else {
     objs <- names(chk)
     for(i in 3:length(chk)){ assign(objs[i], chk[[i]]) }
+  }
+
+  if(dir != ""){
+    dir <- correct_path(dir)
+    if(!dir.exists(dir)){
+      stop("Could not find the provided directory in 'dir'.")
+    }
   }
 
   if(file.exists("tree_cover.tif"))
@@ -116,11 +125,10 @@ get_gfw <- function(study_area,
   ntiles_label <- if(nrow(treecover2000_links) > 1) "tiles" else "tile"
 
   # Download tiles
-  message(paste0("Downloading ", nrow(treecover2000_links), " ", ntiles_label," from Global Forest Watch (2024-v1.12): Tree cover in 2000."))
+  if(!silent) message(paste0("Downloading ", nrow(treecover2000_links), " ", ntiles_label," from Global Forest Watch (2024-v1.12): Tree cover in 2000."))
   for(i in 1:nrow(treecover2000_links)){
-    message(paste0("Tile ", i, "/" , nrow(treecover2000_links)))
+    if(!silent) message(paste0("Tile ", i, "/" , nrow(treecover2000_links)))
     filename1 <- substring(treecover2000_links[i, 1], first = 74, last = nchar(treecover2000_links[i, 1])-4)
-    # download.file(treecover2000_links[i, 1], destfile = paste0(tmp, "/", filename1, ".tif"))
     curl::curl_download(url = treecover2000_links[i, 1],
       destfile = paste0(normalizePath(tmp, winslash = "/"), "/", filename1, ".tif"))
   }
@@ -132,11 +140,10 @@ get_gfw <- function(study_area,
                                           GFL_2024_v1.12_loss$y_max <= max_val_y, ]
 
   # Download tiles
-  message(paste0("\nDownloading ", nrow(treeloss_links), " ", ntiles_label," from Global Forest Watch (2024-v1.12): Forest cover loss."))
+  if(!silent) message(paste0("\nDownloading ", nrow(treeloss_links), " ", ntiles_label," from Global Forest Watch (2024-v1.12): Forest cover loss."))
   for(i in 1:nrow(treeloss_links)){
-    message(paste0("Tile ", i, "/" , nrow(treeloss_links)))
+    if(!silent) message(paste0("Tile ", i, "/" , nrow(treeloss_links)))
     filename2 <- substring(treeloss_links[i, 1], first = 74, last = nchar(treeloss_links[i, 1])-4)
-    # download.file(treeloss_links[i, 1], destfile = paste0(tmp, "/", filename2, ".tif"))
     curl::curl_download(url = treeloss_links[i, 1],
                         destfile = paste0(normalizePath(tmp, winslash = "/"), "/", filename2, ".tif"))
   }
@@ -146,12 +153,12 @@ get_gfw <- function(study_area,
   tcover_rast <- terra::vrt(paste0(tmp, "/", files[grepl("treecover", files)]))
   tcover_rast <- terra::crop(tcover_rast, study_area)
   if(mask) tcover_rast <- terra::mask(tcover_rast, study_area)
-  terra::writeRaster(tcover_rast, paste0(dir, "tree_cover.tif"), overwrite = overwrite)
+  terra::writeRaster(tcover_rast, file.path(dir, "tree_cover.tif"), overwrite = overwrite)
 
   tloss_rast <- terra::vrt(paste0(tmp, "/", files[grepl("lossyear", files)]))
   tloss_rast <- terra::crop(tloss_rast, study_area)
   if(mask) tloss_rast <- terra::mask(tloss_rast, study_area)
-  terra::writeRaster(tloss_rast, paste0(dir, "loss_year.tif"), overwrite = overwrite)
+  terra::writeRaster(tloss_rast, file.path(dir, "loss_year.tif"), overwrite = overwrite)
 
   # Eliminar carpeta temporal
   unlink(file.path(tmp), recursive = T)
@@ -164,5 +171,5 @@ get_gfw <- function(study_area,
                   "or meaningful outside of these areas."))
   }
 
-  message("Raster layers were successfully processed and downloaded")
+  if(!silent) message("Raster layers were successfully processed and downloaded")
 }

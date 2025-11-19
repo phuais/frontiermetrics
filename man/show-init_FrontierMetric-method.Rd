@@ -2,13 +2,16 @@
 % Please edit documentation in R/methods.R
 \name{show,init_FrontierMetric-method}
 \alias{show,init_FrontierMetric-method}
-\title{Show 'init_FrontierMetric' object}
+\title{Shows 'init_FrontierMetric' object}
 \usage{
 \S4method{show}{init_FrontierMetric}(object)
 }
 \arguments{
 \item{object}{Prints relevant information about a 'FrontierMetric' object.}
 }
+\value{
+No return value.
+}
 \description{
-Show 'init_FrontierMetric' object
+Shows 'init_FrontierMetric' object
 }

@@ -6,7 +6,7 @@
 \title{Class 'FrontierMetric_summary'}
 \description{
 Objects of class 'FrontierMetric_summary' are generated with \code{\link[=fmetrics_summary]{fmetrics_summary()}},
-and holds summary statistics of frontier metrics, as well as the area occupied by
+and hold summary statistics of frontier metrics, as well as the area occupied by
 each frontier metric class.
 }
 \section{Slots}{
@@ -16,6 +16,6 @@ each frontier metric class.
 
 \item{\code{classes_areas}}{Data frame with the areas of frontier metric's classes.}
 
-\item{\code{hists}}{'ggplot' objects of frontier metric's histograms.}
+\item{\code{hists}}{'ggplot' object with frontier metric's histograms.}
 }}
 

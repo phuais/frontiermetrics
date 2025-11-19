@@ -1,5 +1,5 @@
-get_FL <- function(i, rast_loss, cell_size, aggregation, years, ncores, is_series, cover_series){
-  cat("\r> Processing year: ", i , " / ", length(years), sep = "")
+get_FL <- function(i, rast_loss, cell_size, aggregation, years, ncores, is_series, cover_series, silent){
+  if(!silent) cat("\r> Processing year: ", i , " / ", length(years), sep = "")
   if(!is_series){
     gwf_loss_tmp <- rast_loss == i
   } else {
@@ -53,6 +53,7 @@ get_FL <- function(i, rast_loss, cell_size, aggregation, years, ncores, is_serie
 #' @param window A whole number depicting the number of years to consider in the calculation of activeness.
 #' Default is 5. See Details.
 #' @param ncores Numbers of cores to parallelize processes. Default is 1.
+#' @param silent Logical. If `TRUE`, suppresses messages. Default is `FALSE`.
 #'
 #' @details
 #' Deforestation frontier metrics were initially developed to be calculated with Global Forest Watch databases
@@ -136,16 +137,21 @@ get_FL <- function(i, rast_loss, cell_size, aggregation, years, ncores, is_serie
 #' \dontrun{
 #' # Downloads raster layers generated with function get_gfw()
 #' # Tree cover
-#' download.file(frontiermetrics_data[2], "tree_cover.tif")
+#' curl::curl_download(frontiermetrics_data[2], "tree_cover.tif")
 #' # Forest loss
-#' download.file(frontiermetrics_data[3], "loss_year.tif")
+#' curl::curl_download(frontiermetrics_data[3], "loss_year.tif")
 #'
 #' # Loads raster layers generated with function get_gfw()
 #' rast_cover <- terra::rast("tree_cover.tif")
 #' rast_loss <- terra::rast("loss_year.tif")
 #'
-#' # Generates primary dataset
-#' copo_dataset <- init_fmetrics(raster = list(rast_cover, rast_loss), ncores = 2)
+#' # Generates structured object
+#' copo_dataset <- init_fmetrics(raster = list(gfw_cover, gfw_loss),
+#'                               time_frame = c(2000, 2024),
+#'                               ncores = 1)
+#'
+#' # Shows basic information of the object
+#' copo_dataset
 #' }
 init_fmetrics <- function(raster,
                           is_series = FALSE,
@@ -156,7 +162,8 @@ init_fmetrics <- function(raster,
                           min_cover = 5,
                           min_rate = 0.5,
                           window = 5,
-                          ncores = 1) {
+                          ncores = 1,
+                          silent = FALSE) {
   # Argument's checking
   environment(check_init_fmetrics) <- environment()
   chk <- check_init_fmetrics()
@@ -296,7 +303,8 @@ init_fmetrics <- function(raster,
                     years,
                     ncores,
                     is_series,
-                    cover_series)
+                    cover_series,
+                    silent)
 
   # Merge into a dataframe
   for(i in 1:length(results)){
@@ -359,7 +367,7 @@ init_fmetrics <- function(raster,
   foo_classes <- breaks_rules()
   foo_classes@baseline[[1]] <- c(-Inf, min_cover, Inf)
   foo_classes@baseline[[2]] <- c("excluded", "included")
-  cat("\n> Finding deforestation frontiers")
+  if(!silent) cat("\n> Finding deforestation frontiers")
   foo_metrics <- fmetrics(x = out,
                           metrics = c("baseline", "activeness"),
                           params = list(activeness_levels = list(included = T_ranges$window),

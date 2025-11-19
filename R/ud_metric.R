@@ -18,8 +18,6 @@ ud_metric <- function(x, fm_ds, name){
 }
 
 ud_rasterize <- function(x, fm_ds, cell){
-  #fm_ds <- x@data
-
   spgdssample <- fm_ds[fm_ds$id_cell == cell, ]
   spgdssample <- spgdssample[order(spgdssample$y_1, decreasing = T), ]
   spgdssample <- spgdssample[order(spgdssample$x_1), ]

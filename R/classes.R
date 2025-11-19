@@ -1,8 +1,9 @@
 #' @import methods
-## @importFrom methods is show setClassUnion
 #' @importFrom data.table data.table as.data.table
 #' @importClassesFrom terra SpatRaster
 #' @importClassesFrom data.table data.table
+#' @importFrom stats na.exclude
+#' @importFrom utils write.table
 
 setClassUnion("null_rast", c("NULL", "SpatRaster"))
 setClassUnion("null_ds", c("NULL", "data.table"))
@@ -11,7 +12,7 @@ setClassUnion("null_num", c("NULL", "numeric"))
 #' Class 'init_FrontierMetric'
 #'
 #' Objects of class 'init_FrontierMetric' are generated with [init_fmetrics()], and hold
-#' the necessary objects to calculate frontier metrics with [fmetrics()]. The main
+#' the necessary structures to calculate frontier metrics with [fmetrics()]. The main
 #' object is under `@data`, which is a data frame containing -among other relevant data- the amount of forest
 #' cover in the first year of the time series, and the amount of forest loss
 #' in each year of the time series, for each individual cell of the study area.
@@ -29,12 +30,11 @@ setClassUnion("null_num", c("NULL", "numeric"))
 #' @slot min_cover Pre-defined minimum forest cover during running of [init_fmetrics()].
 #' @slot min_rate Pre-defined minimum forest loss rate during running of [init_fmetrics()].
 #' @slot window Pre-defined window of years to calculate `min_rate` during running of [init_fmetrics()].
-#' @slot temporal_windows Pre-defined time windows, relevant for activeness metric.
+#' @slot temporal_windows Pre-defined temporal windows, relevant for metric of activeness.
 #' @slot excluded_cells Cells excluded for future analysis (not frontiers)
 #'
 #' @export
 setClass("init_FrontierMetric",
-
          slots = c(
            # dataset
            data = "data.table",
@@ -81,16 +81,16 @@ setClass("init_FrontierMetric",
 
            # data with the ids and coordinates of excluded cells
            excluded_cells = "data.table"
-         )
-)
+         ))
 
 #' Class 'FrontierMetric'
 #'
-#' Object of class 'FrontierMetric' are generated with [fmetrics()], and hold
+#' Objects of class 'FrontierMetric' are generated with [fmetrics()], and hold
 #' the values of the calculated frontier metrics for each cell of the study area.
-#' Objects of this class can be passed to [fmetrics_plot()] and [fmetrics_rast()].
+#' Objects of this class can be passed to [fmetrics_plot()], [fmetrics_summary()], and [fmetrics_rast()].
 #'
 #' @slot metrics Calculated frontier metrics.
+#' @slot ud_metrics Calculated user-defined frontier metrics.
 #' @slot time_frame Year range of the studied time series.
 #' @slot data Main data frame containing the values of the calculated frontier
 #' metrics for each individual cell of the study area.
@@ -101,6 +101,7 @@ setClass("init_FrontierMetric",
 #' @slot min_cover Pre-defined minimum forest cover during running of [init_fmetrics()].
 #' @slot min_rate Pre-defined minimum forest loss rate during running of [init_fmetrics()].
 #' @slot window Pre-defined window of years to calculate `min_rate` during running of [init_fmetrics()].
+#' @slot archetypes Data frame containing the calculated archetypes for each cell of the study area.
 #' @slot excluded_cells Cells excluded for future analysis (not frontiers)
 #'
 #' @export
@@ -144,13 +145,12 @@ setClass("FrontierMetric",
 
            # data with the ids and coordinates of excluded cells
            excluded_cells = "data.table"
-         )
-)
+         ))
 
 #' Class 'FrontierMetric_breaks'
 #'
 #' Objects of class 'FrontierMetric_breaks' are generated with [breaks_rules()].
-#' It holds the definition of rules to categorize the values of frontier metrics
+#' They hold the set of rules to categorize the continuous values of frontier metrics
 #' into discrete classes.
 #'
 #' @slot baseline List of rules for frontier metric "baseline forest".
@@ -173,12 +173,12 @@ setClass("FrontierMetric_breaks",
 #' Class 'FrontierMetric_summary'
 #'
 #' Objects of class 'FrontierMetric_summary' are generated with [fmetrics_summary()],
-#' and holds summary statistics of frontier metrics, as well as the area occupied by
+#' and hold summary statistics of frontier metrics, as well as the area occupied by
 #' each frontier metric class.
 #'
 #' @slot summary_stats Data frame with summary statistics.
 #' @slot classes_areas Data frame with the areas of frontier metric's classes.
-#' @slot hists 'ggplot' objects of frontier metric's histograms.
+#' @slot hists 'ggplot' object with frontier metric's histograms.
 #'
 #' @export
 setClass("FrontierMetric_summary",
@@ -187,60 +187,3 @@ setClass("FrontierMetric_summary",
            classes_areas = "data.frame",
            hists = "ANY")
          )
-
-# Class 'FrontierMetric_summary'
-#
-# Objects of class 'FrontierMetric_summary' are generated with [fmetrics_summary()],
-# and holds summary statistics of frontier metrics, as well as the area occupied by
-# each frontier metric class.
-#
-# @slot summary_stats Data frame with summary statistics.
-# @slot classes_areas Data frame with the areas of frontier metric's classes.
-# @slot hists 'ggplot' objects of frontier metric's histograms.
-#
-# setClass("FrontierMetric_raster",
-#          slots = c(
-#            # Contained frontier metrics
-#            metrics = "character",
-#
-#            # Contained used defined metrics
-#            ud_metrics = "character",
-#
-#            # year range
-#            time_frame = "numeric",
-#
-#            # frontier metrics dataset
-#            data = "data.table",
-#
-#            # extent of analysis
-#            extent = "numeric",
-#
-#            # grain
-#            grain = "list",
-#
-#            # first and second aggregation factor
-#            aggregation = "numeric",
-#
-#            # tree cover threshold
-#            min_treecover = "null_num",
-#
-#            # forest cover threshold
-#            min_cover = "numeric",
-#
-#            # deforestation rate threshold
-#            min_rate = "numeric",
-#
-#            # size, in years, of temporal window
-#            window = "numeric",
-#
-#            # frontier archetypes
-#            archetypes = "data.frame",
-#
-#            # data with the ids and coordinates of excluded cells
-#            excluded_cells = "data.table",
-#
-#            # raster layers
-#            raster_layers = "SpatRaster",
-#            info = "list",
-#            time_frame = "numeric")
-# )

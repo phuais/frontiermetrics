@@ -4,7 +4,14 @@
 \alias{get_gfw}
 \title{Downloads and processes Global Forest Watch tiles}
 \usage{
-get_gfw(study_area, dir = "", mask = TRUE, overwrite = FALSE, timeout = 600)
+get_gfw(
+  study_area,
+  dir = "",
+  mask = TRUE,
+  overwrite = FALSE,
+  timeout = 600,
+  silent = FALSE
+)
 }
 \arguments{
 \item{study_area}{Either: (1) a 'SpatExtent' object defining the study area extent
@@ -20,6 +27,8 @@ boundaries of the provided extent or polygon in \code{study_area}. Otherwise, th
 \item{overwrite}{Logical. If \code{TRUE}, files will be overwritten.}
 
 \item{timeout}{Maximum time (in seconds) invested in downloading the tiles. Default is 600.}
+
+\item{silent}{Logical. If \code{TRUE}, suppresses messages. Default is \code{FALSE}.}
 }
 \value{
 Exports cropped and/or masked raster layers from GFW databases, one for tree cover
@@ -39,16 +48,16 @@ the provided extent or polygon.
 \examples{
 \dontrun{
 # Creates working directory
-dir.create("copo_tiles/")
+dir.create("copo_tiles")
 
 # Downloads study_area of study area
-download.file(frontiermetrics_data[1], dir = "copo.gpkg")
+curl::curl_download(frontiermetrics_data[1], "copo.gpkg")
 
 # Loads study_area of study area
 copo <- terra::vect("copo.gpkg")
 
 # Downloads GFW tiles and exports cropped and masked raster layers
-get_gfw(study_area = copo, dir = "copo_tiles/")
+get_gfw(study_area = copo, dir = "copo_tiles")
 }
 }
 \references{

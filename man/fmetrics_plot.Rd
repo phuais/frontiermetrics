@@ -13,14 +13,16 @@ fmetrics_plot(
   direction = 1,
   background = c("white", "gray64"),
   archetypes = NULL,
-  arch_colors = list(NULL, "gray42")
+  arch_colors = list(NULL, "gray42"),
+  silent = FALSE
 )
 }
 \arguments{
 \item{x}{Object of class 'FrontierMetric' generated with \code{\link[=fmetrics]{fmetrics()}}}
 
 \item{metrics}{Frontier metrics to be plotted. Options include those calculated
-frontier metrics or "all" to calculate all frontier metrics available within \code{x}. Default is "all".}
+frontier metrics (including user-defined metrics) or "all" to calculate all frontier
+metrics available within \code{x}. Default is "all".}
 
 \item{what}{One of the following: "both", to plot continuous values and discrete
 classes of frontier metrics; "values", to plot only continuous values; "classes"
@@ -32,7 +34,7 @@ Default is "both". See Details.}
 \item{palette}{String with the name of the palette to be used
 in the plots. Default is \code{"viridis"}. See Details.}
 
-\item{direction}{A 1 (default) or -1, indicating the direction of the palette
+\item{direction}{Either 1 (default) or -1, indicating the direction of the palette
 for the continuous values of frontier metrics and discrete classes. See Details.}
 
 \item{background}{A vector of two strings with the names of the colors to be used
@@ -41,7 +43,7 @@ the range of the study area, while the second depicts the color for those cells
 within the study area that did not qualify as frontiers. Default is \code{c("gray90", "gray64")}.
 See Details.}
 
-\item{archetypes}{A list archetypes or group of archetypes to be plotted when \code{what = "archetypes"}.
+\item{archetypes}{A list of archetypes or group of archetypes to be plotted when \code{what = "archetypes"}.
 Each element of the list must be a vector with the names of the archetypes (as
 in \code{x@archetypes}) to be plotted. If \code{NULL} (default) only those archetypes with a minimum area
 coverage of 5\% will be plotted. See Details.}
@@ -49,6 +51,8 @@ coverage of 5\% will be plotted. See Details.}
 \item{arch_colors}{A list of two elements. The first element is a vector with the colors
 to be used for the archetypes. The second element is a string with the color to be used
 for the unnamed archetypes ("Other").}
+
+\item{silent}{Logical. If \code{TRUE}, suppresses messages. Default is \code{FALSE}.}
 }
 \description{
 Generates plots of frontier metrics based on an object of class 'FrontierMetric'
@@ -64,16 +68,21 @@ frontier classification. Archetypes are automatically calculated when \code{x} i
 \code{fmetrics()}, and can be seen by running \code{x@archetypes}. To plot archetypes, the
 user must indicate \code{what = "archetypes"}, and a list of archetypes in argument
 \code{archetypes}. Each element of the list can contain a unique archetype, but
-also encompass more archetypes. The name of each element of the list will be
-used to identify each archetype or group of archetypes in the plot. If
-\code{archetypes = NULL}, by default the function will plot those archetypes with a
-minimum pixel coverage of 5\% in the study area.
+also encompass more archetypes. For instance, \code{archetypes = list(1:3, 4, 5:6)},
+would plot with one color archetypes 1 to 3, a second color archetype 4, and a
+third color archetype 5 and 6. Those cells not classified with the provided
+archetypes will be classified as "Other frontiers".
+
+If \code{archetypes = NULL}, by default the function will plot those archetypes with a
+minimum area coverage of 5\% in the study area.
+
+Note that if \code{what = "archetypes"}, argument \code{metrics} will be ignored.
 
 Colors for archetypes can be defined in the \code{arch_colors} argument. The first element
 of the list must be a vector with the colors to be used for the archetypes. If
 \code{NULL}, colors will be based on the selected palette in \code{palette}. The
-second element must be a string with the color to be used for the unnamed archetype
-("Other").
+second element must be a string with the color to be used for those cells not
+falling with any of the provided archetypes ("Other frontiers").
 
 Available palettes are those available for the function \code{scale_fill_viridis()}:
 "magma", "inferno", "plasma", "viridis", "cividis", "rocket", "mako", or "turbo".
@@ -83,7 +92,15 @@ better visualization.
 }
 \examples{
 \dontrun{
+# Plots all calculated metrics
 fmetrics_plot(copo_metrics)
-fmetrics_plot(copo_metrics, metrics = "speed", what = "values", palette = "magma")
 }
+
+# Plots a single metric
+fmetrics_plot(copo_metrics, metrics = "speed", what = "values", palette = "magma")
+
+# Plots archetypes: 1:5, 6:10 and 11:15. Each group with a different color
+fmetrics_plot(copo_metrics, what = "archetypes",
+              archetypes = list(1:5, 6:10, 11:15),
+              arch_colors = list(c("firebrick", "blue", "yellow"), "gray42"))
 }

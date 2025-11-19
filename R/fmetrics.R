@@ -46,7 +46,7 @@ get_archetypes <- function(out){
 
   fm_classes <- fm_codes$cname[fm_codes$metric %in% out@metrics]
 
-  if(length(fm_classes) > 0){
+  if(length(fm_classes) > 1){
     out@data$arch_code <- do.call(paste, c(out@data[, ..fm_classes], sep = "_"))
     archs <- as.data.frame(table(out@data$arch_code))
 
@@ -93,9 +93,11 @@ get_archetypes <- function(out){
 #' @param breaks An object of class 'FrontierMetric_breaks' generated with [breaks_rules()], containing the rules
 #' to define discrete classes for individual frontier metrics. See Details.
 #' @param dir A path to a directory to export raster layers of frontier metrics. If `NULL`,
-#' (default) raster layers will not be exported, but stored in as an R object.
+#' (default) raster layers will not be exported. See Details.
 #' @param gdal GDAL driver specific datasource creation options. See ?terra::writeRaster for details.
 #' @param overwrite Logical. If `TRUE` (default), raster layers files will be overwritten.
+#' @param export_archetypes Logical. If `TRUE` and a path is provided in `dir`,
+#' raster layer of archetypes will be exported. Default is `FALSE`.
 #' @param ncores Numbers of cores to parallelize processes. Default is 1. See Details.
 #' @param silent Logical. If `TRUE`, suppresses messages. Default is `FALSE`.
 #'
@@ -122,36 +124,35 @@ get_archetypes <- function(out){
 #' if we consider a time-frame of 2000-2024 and a temporal window of 5 years, the
 #' temporal windows for this time-frame will be:
 #'
-#' \tabular{rrr}{
-#' window \tab first_year \tab last_year \cr
-#' 1  \tab 2001 \tab 2005 \cr
-#' 2  \tab 2002 \tab 2006 \cr
-#' 3  \tab 2003 \tab 2007 \cr
-#' 4  \tab 2004 \tab 2008 \cr
-#' 5  \tab 2005 \tab 2009 \cr
-#' 6  \tab 2006 \tab 2010 \cr
-#' 7  \tab 2007 \tab 2011 \cr
-#' 8  \tab 2008 \tab 2012 \cr
-#' 9  \tab 2009 \tab 2013 \cr
-#' 10 \tab 2010 \tab 2014 \cr
-#' 11 \tab 2011 \tab 2015 \cr
-#' 12 \tab 2012 \tab 2016 \cr
-#' 13 \tab 2013 \tab 2017 \cr
-#' 14 \tab 2014 \tab 2018 \cr
-#' 15 \tab 2015 \tab 2019 \cr
-#' 16 \tab 2016 \tab 2020 \cr
-#' 17 \tab 2017 \tab 2021 \cr
-#' 18 \tab 2018 \tab 2022 \cr
-#' 19 \tab 2019 \tab 2023 \cr
-#' 20 \tab 2020 \tab 2024 \cr
-#' }
+#' | window &nbsp;&nbsp;&nbsp; | first_year &nbsp;&nbsp;&nbsp; | last_year &nbsp;&nbsp;&nbsp; |
+#' |:------|:------|:------|
+#' | 1  | 2001 | 2005 |
+#' | 2  | 2002 | 2006 |
+#' | 3  | 2003 | 2007 |
+#' | 4  | 2004 | 2008 |
+#' | 5  | 2005 | 2009 |
+#' | 6  | 2006 | 2010 |
+#' | 7  | 2007 | 2011 |
+#' | 8  | 2008 | 2012 |
+#' | 9  | 2009 | 2013 |
+#' | 10 | 2010 | 2014 |
+#' | 11 | 2011 | 2015 |
+#' | 12 | 2012 | 2016 |
+#' | 13 | 2013 | 2017 |
+#' | 14 | 2014 | 2018 |
+#' | 15 | 2015 | 2019 |
+#' | 16 | 2016 | 2020 |
+#' | 17 | 2017 | 2021 |
+#' | 18 | 2018 | 2022 |
+#' | 19 | 2019 | 2023 |
+#' | 20 | 2020 | 2024 |
 #'
 #' If `activeness_levels = NULL`, frontier activeness will be classified in "emerging" (active
-#' during temporal windows X to X), "active" (active during temporal windows X to X) or
-#' "old" (active during temporal windows X to X). These categories can be changed. For instance,
-#' if `activeness_levels = list(emerging = X, old = X, very_old = X)`, three levels of
+#' during temporal window 20), "active" (active during temporal windows 16 to 19) or
+#' "old" (active during temporal windows 1 to 15). These categories can be changed. For instance,
+#' if `activeness_levels = list(emerging = 19:20, old = 15:18, very_old = 1:14)`, three levels of
 #' activeness will be considered, according to the provided temporal windows for each one.
-#' All temporal windows must be considered in any of the defined activeness levels.
+#' All temporal windows must be considered in the defined activeness levels.
 #'
 #' If `onset_min_years = 3` (default), onset will refer to the year of onset of the deforestation frontier, calculated as the
 #' first year with at least 3 years of consecutive forest loss. The user can change this
@@ -179,7 +180,8 @@ get_archetypes <- function(out){
 #' the outputted object.
 #'
 #' If a path is provided in `dir` (default is `NULL`), raster layers of frontier metrics will be
-#' exported as .tif files. GDAL options can be defined in argument `gdal`. See ?terra::writeRaster for details.
+#' exported as .tif files. Use `dir = ""` to export files to current  directory.
+#' GDAL options can be defined in argument `gdal`. See ?terra::writeRaster for details.
 #'
 #' Parallelization is recommended for very large datasets (ncores > 1).
 #' The calculation of the fragmentation metrics is the most computationally intensive.
@@ -188,7 +190,8 @@ get_archetypes <- function(out){
 #' parallelization requires the `snowfall` package.
 #'
 #' @return An object of class 'FrontierMetric', containing a dataset with the calculated frontier metrics
-#' for each individual cell. This object can be passed to [fmetrics_summary()], [fmetrics_plot()], and [fmetrics_rast()].
+#' for each individual cell. This object can be passed to [fmetrics_summary()],
+#' [fmetrics_plot()], and [fmetrics_rast()]. Raster
 #'
 #' @seealso [init_fmetrics()], [fmetrics_summary()], [fmetrics_plot()], and [fmetrics_rast()]
 #'
@@ -199,24 +202,19 @@ get_archetypes <- function(out){
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' # Downloads example of object of class 'init_FrontierMetric' generated with init_fmetrics()
-#' download.file(frontiermetrics_data[4], "copo_dataset.RDS")
+#' curl::curl_download(frontiermetrics_data[4], file.path(tempdir(), "copo_dataset.RDS"))
 #'
 #' # Loads object to R environment
-#' copo_dataset <- readRDS("copo_dataset.RDS")
+#' copo_dataset <- readRDS(file.path(tempdir(), "copo_dataset.RDS"))
 #'
-#' # Calculates all frontier metrics
-#' copo_metrics <- fmetrics(copo_dataset, metrics = "all", ncores = 2)
+#' # Calculates specific metrics;
+#' #   Use "all" for all available metrics;
+#' #   Use dir = "path_to_directory" to also export as raster layers
+#' copo_metrics2 <- fmetrics(copo_dataset, metrics = c("baseline", "speed", "left", "onset"))
 #'
-#' # Calculates development frontiers
-#' copo_metrics2 <- fmetrics(copo_dataset, metrics = "development", ncores = 2)
+#' # Inspect generated object
 #' copo_metrics2
-#'
-#' # Calculates a single frontier
-#' copo_metrics3 <- fmetrics(copo_dataset, metrics = "speed", ncores = 2)
-#' copo_metrics3
-#' }
 fmetrics <- function(x,
                      metrics = "all",
                      params = list(activeness_levels = NULL,
@@ -225,6 +223,7 @@ fmetrics <- function(x,
                      dir = NULL,
                      gdal = NULL,
                      overwrite = TRUE,
+                     export_archetypes = FALSE,
                      ncores = 1,
                      silent = FALSE){
 
@@ -243,6 +242,15 @@ fmetrics <- function(x,
       objs <- names(chk)
       for (i in 3:length(chk)) {
         assign(objs[i], chk[[i]])
+      }
+    }
+  }
+
+  if(!is.null(dir)){
+    if(dir != ""){
+      dir <- correct_path(dir)
+      if(!dir.exists(dir)){
+        stop("Could not find the provided directory in 'dir'.")
       }
     }
   }
@@ -296,49 +304,41 @@ fmetrics <- function(x,
   }
 
   if("baseline_frag" %in% metrics){
-    if(!silent) message("   baseline forest fragmentation")
     foo <- calc_fm_baseline_frag(x, breaks@baseline_frag, ncores)
     out <- dt_append(out, foo)
   }
 
   if("activeness" %in% metrics){
-    if(!silent) message("   activeness")
     foo <- calc_fm_activeness(x, params$activeness_levels)
     out <- dt_append(out, foo)
   }
 
   if("speed" %in% metrics){
-    if(!silent) message("   speed")
     foo <- calc_fm_speed(x, breaks@speed)
     out <- dt_append(out, foo)
   }
 
   if("loss" %in% metrics){
-    if(!silent) message("   forest loss")
     foo <- calc_fm_loss(x, breaks@loss)
     out <- dt_append(out, foo)
   }
 
   if("left" %in% metrics){
-    if(!silent) message("   forest left")
     foo <- calc_fm_left(x, breaks@left)
     out <- dt_append(out, foo)
   }
 
-  if("loss_frag" %in% metrics){
-    if(!silent) message("   forest loss fragmentation")
-    foo <- calc_fm_loss_frag(x, breaks@loss_frag, ncores)
-    out <- dt_append(out, foo)
-  }
-
   if("onset" %in% metrics){
-    if(!silent) message("   onset")
     foo <- calc_fm_onset(x, params$onset_min_years, ncores)
     out <- dt_append(out, foo)
   }
 
+  if("loss_frag" %in% metrics){
+    foo <- calc_fm_loss_frag(x, breaks@loss_frag, ncores)
+    out <- dt_append(out, foo)
+  }
+
   if(!is.null(ud_metrics)){
-    if(!silent) message("Calculating user-defined metrics")
     for(ud_f in ud_metrics){
       fm_ds <- do.call(ud_f, list(x = x))
       foo <- ud_metric(x, fm_ds, name = ud_f)
@@ -362,9 +362,11 @@ fmetrics <- function(x,
   # Reorder rows by id_cell
   out@data <- out@data[order(out@data$id_cell, decreasing = F), ]
 
-  # Export rasters
+  # Export rasters if requested
   if(!is.null(dir)){
-    fmetrics_rast(x = out, metrics = metrics, dir = dir, gdal = gdal, overwrite = overwrite)
+    if(export_archetypes) metrics <- c(metrics, "archetypes")
+    fmetrics_rast(x = out, metrics = metrics,
+                  dir = dir, gdal = gdal, overwrite = overwrite)
   }
 
   return(out)

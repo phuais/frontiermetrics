@@ -14,7 +14,8 @@ init_fmetrics(
   min_cover = 5,
   min_rate = 0.5,
   window = 5,
-  ncores = 1
+  ncores = 1,
+  silent = FALSE
 )
 }
 \arguments{
@@ -51,6 +52,8 @@ in a five-year period for a cell to be considered a frontier. Default is 0.5. Se
 Default is 5. See Details.}
 
 \item{ncores}{Numbers of cores to parallelize processes. Default is 1.}
+
+\item{silent}{Logical. If \code{TRUE}, suppresses messages. Default is \code{FALSE}.}
 }
 \value{
 An object of class 'init_FrontierMetric', containing the structured dataset to
@@ -130,16 +133,21 @@ number of years (e.g. 2, 3, 7 or 9 years).
 \dontrun{
 # Downloads raster layers generated with function get_gfw()
 # Tree cover
-download.file(frontiermetrics_data[2], "tree_cover.tif")
+curl::curl_download(frontiermetrics_data[2], "tree_cover.tif")
 # Forest loss
-download.file(frontiermetrics_data[3], "loss_year.tif")
+curl::curl_download(frontiermetrics_data[3], "loss_year.tif")
 
 # Loads raster layers generated with function get_gfw()
 rast_cover <- terra::rast("tree_cover.tif")
 rast_loss <- terra::rast("loss_year.tif")
 
-# Generates primary dataset
-copo_dataset <- init_fmetrics(raster = list(rast_cover, rast_loss), ncores = 2)
+# Generates structured object
+copo_dataset <- init_fmetrics(raster = list(gfw_cover, gfw_loss),
+                              time_frame = c(2000, 2024),
+                              ncores = 1)
+
+# Shows basic information of the object
+copo_dataset
 }
 }
 \references{

@@ -34,7 +34,7 @@ The following algoritms are available (first element of the list):
 The number (n) of intervals is given by the number of categories provided
 in the second element of the list.
 
-(2) "equal": splits the numeric range \link{min(y), max(y)} of metric values (\code{y}) into n intervals of equal
+(2) "equal": splits the numeric range between minimum and maximum metric values into n intervals of equal
 width. The number (n) of intervals is given by the number of categories provided
 in the second element of the list.
 
@@ -48,36 +48,20 @@ provided. For example: \code{c(5, 10, 55, Inf)}, and the categories (second elem
 of the list) could be \code{c("Low", "Medium", "High")}, where "Low": 5-10, "Medium": 10-55, and
 "High": 55-Inf.
 
-To define new rules, the user must provide a list for each frontier metric. For all metrics except "activeness"
-the rules should follow the format used in \code{\link[=cut]{cut()}}. Specifically, the first element
-of the list should be a numeric vector of two or more unique cut points (breaks), and the second
-element should be a character vector of labels corresponding to each resulting category. For
-instance, classes for frontier metric "baseline" could be ruled as follows:
-
 When assigned to an object, the new definition of classes can be passed to \code{\link[=fmetrics]{fmetrics()}},
 inside the argument \code{breaks}, to generate frontier metrics's classes with a new definition.
 }
 \examples{
-\dontrun{
-# Explore default parameters
-init_classes()
+# Explore default rules
+breaks_rules()
 
-# Define new parameters for baseline and activeness
-# Baseline
+# Define new parameters for baseline
 #   Low: between 5 and 20
 #   Medium: between 20 and 70
 #   High: Higher than 70
-# Activeness
-#   Old frontiers: last year active in 2019
-#   Emerging frontiers: first year active in 2020
-class_par <- init_classes(baseline = list(c(5, 20, 70, Inf),
-                                          c("Low", "Medium", "High")),
-                          activeness = list(old = 2019, emerging = 2020, window = 5))
+breaks_1 <- breaks_rules(baseline = list(c(5, 20, 70, Inf),
+                                         c("Low", "Medium", "High")))
 
-# Shows new defined classes
-class_par
-
-# This object can be passes to [fmetrics()] inside the argument
-# `classes`, to generate frontier metrics's classes with this new definition
-}
+# Shows new defined rules
+breaks_1
 }

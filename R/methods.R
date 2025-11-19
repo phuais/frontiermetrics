@@ -4,9 +4,11 @@
 if(!isGeneric("show"))
   methods::setGeneric("show", function(object) standardGeneric("show"))
 
-#' Show 'init_FrontierMetric' object
+#' Shows 'init_FrontierMetric' object
 #'
 #' @param object Prints relevant information about a 'FrontierMetric' object.
+#'
+#' @return No return value.
 #'
 #' @export
 methods::setMethod(f = "show", signature = "init_FrontierMetric",
@@ -39,9 +41,11 @@ methods::setMethod(f = "show", signature = "init_FrontierMetric",
                      }
 )
 
-#' Show 'FrontierMetric' object
+#' Shows 'FrontierMetric' object
 #'
 #' @param object Prints relevant information about a 'FrontierMetric' object.
+#'
+#' @return No return value.
 #'
 #' @export
 methods::setMethod(f = "show", signature = "FrontierMetric",
@@ -75,9 +79,11 @@ ff_show_classes <- function(x){
   classes
 }
 
-#' Show 'FrontierMetric_breaks' object
+#' Shows 'FrontierMetric_breaks' object
 #'
 #' @param object Prints relevant information about a 'FrontierMetric_breaks' object.
+#'
+#' @return No return value.
 #'
 #' @export
 methods::setMethod(f = "show", signature = "FrontierMetric_breaks",
@@ -94,27 +100,8 @@ methods::setMethod(f = "show", signature = "FrontierMetric_breaks",
                        cat(ff_show_classes(object@loss_frag), "\n")
                        cat("- Speed [km\U00B2/year]: ")
                        cat(ff_show_classes(object@speed), "\n")
-                       # Activeness
-                       # k <- object@activeness
-                       # window <- k$window
-                       # cat("- Activeness: \n", sep = "")
-                       # for(i in 1:length(object@activeness)){
-                       #   cat(paste0("    ", names(object@activeness)[i], ": ", object@activeness[i], "\n"))
-                       # }
-                       # cat("  old       ",
-                       #     paste0("... ,[",(k[[1]]-window-1), ",", (k[[1]]-2),"], [",
-                       #            (k[[1]]-window), ",", (k[[1]]-1), "], [",
-                       #            (k[[1]]-(window-1)), ",", (k[[1]]), "]\n"),
-                       #     "  active    ",
-                       #     paste0("[", (k[[1]]-3), ",", (k[[1]]+(window-4)), "], [",
-                       #            (k[[1]]-2), ",", (k[[1]]+(window-3)), "] ... [",
-                       #            (k[[2]]-1), ",", (k[[2]])+(window-2), "]\n"),
-                       #     "  emerging  ",
-                       #     paste0("[", k[[2]], ",", k[[2]]+(window-1), "]\n\n"), sep = "")
                        cat("- Forest left [%]: ")
                        cat(ff_show_classes(object@left))
-                       # cat("- Onset [year]:\n")
-                       # cat(paste0("    min. number of years = ", object@onset))
                      }
 )
 
@@ -125,9 +112,11 @@ print_fdf <- function(x, chars){
   }
 }
 
-#' Show 'FrontierMetric_summary' object
+#' Shows 'FrontierMetric_summary' object
 #'
 #' @param object Prints relevant information about a 'FrontierMetric_summary' object.
+#'
+#' @return No return value.
 #'
 #' @export
 methods::setMethod(f = "show", signature = "FrontierMetric_summary",
@@ -166,18 +155,3 @@ methods::setMethod(f = "show", signature = "FrontierMetric_summary",
                      }
 )
 
-# Show 'FrontierMetric_raster' object
-#
-# @param object Prints relevant information about a 'FrontierMetric_raster' object.
-#
-# @export
-# methods::setMethod(f = "show", signature = "FrontierMetric_raster",
-#                    definition =
-#                      function(object){
-#                        cat("Class      : FrontierMetric_raster\n")
-#                        cat("Metrics    :", paste(names(object@raster_layers)[!grepl("\\.c",
-#                                                                                     names(object@raster_layers))],
-#                                                   collapse = " "), "\n")
-#                        cat("Time-frame : ", object@time_frame[1], " - ", object@time_frame[2], "\n", sep = "")
-#                      }
-# )

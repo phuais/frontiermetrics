@@ -84,7 +84,8 @@ ff_plot_raster <- function(df, df_excluded, fill, what, title, aspect, extent,
 #'
 #' @param x Object of class 'FrontierMetric' generated with [fmetrics()]
 #' @param metrics Frontier metrics to be plotted. Options include those calculated
-#' frontier metrics or "all" to calculate all frontier metrics available within `x`. Default is "all".
+#' frontier metrics (including user-defined metrics) or "all" to calculate all frontier
+#' metrics available within `x`. Default is "all".
 #' @param what One of the following: "both", to plot continuous values and discrete
 #' classes of frontier metrics; "values", to plot only continuous values; "classes"
 #' to plot only discrete classes; or "archetypes", to plot frontier archetypes.
@@ -92,20 +93,21 @@ ff_plot_raster <- function(df, df_excluded, fill, what, title, aspect, extent,
 #' @param ncol Number of columns to arrange plots. Default is 4.
 #' @param palette String with the name of the palette to be used
 #' in the plots. Default is `"viridis"`. See Details.
-#' @param direction A 1 (default) or -1, indicating the direction of the palette
+#' @param direction Either 1 (default) or -1, indicating the direction of the palette
 #' for the continuous values of frontier metrics and discrete classes. See Details.
 #' @param background A vector of two strings with the names of the colors to be used
 #' for the background of the plot. The first depicts the color for the region outside
 #' the range of the study area, while the second depicts the color for those cells
 #' within the study area that did not qualify as frontiers. Default is `c("gray90", "gray64")`.
 #' See Details.
-#' @param archetypes A list archetypes or group of archetypes to be plotted when `what = "archetypes"`.
+#' @param archetypes A list of archetypes or group of archetypes to be plotted when `what = "archetypes"`.
 #' Each element of the list must be a vector with the names of the archetypes (as
 #' in `x@archetypes`) to be plotted. If `NULL` (default) only those archetypes with a minimum area
 #' coverage of 5% will be plotted. See Details.
 #' @param arch_colors A list of two elements. The first element is a vector with the colors
 #' to be used for the archetypes. The second element is a string with the color to be used
 #' for the unnamed archetypes ("Other").
+#' @param silent Logical. If `TRUE`, suppresses messages. Default is `FALSE`.
 #'
 #' @export
 #'
@@ -119,16 +121,21 @@ ff_plot_raster <- function(df, df_excluded, fill, what, title, aspect, extent,
 #' `fmetrics()`, and can be seen by running `x@archetypes`. To plot archetypes, the
 #' user must indicate `what = "archetypes"`, and a list of archetypes in argument
 #' `archetypes`. Each element of the list can contain a unique archetype, but
-#' also encompass more archetypes. The name of each element of the list will be
-#' used to identify each archetype or group of archetypes in the plot. If
-#' `archetypes = NULL`, by default the function will plot those archetypes with a
-#' minimum pixel coverage of 5% in the study area.
+#' also encompass more archetypes. For instance, `archetypes = list(1:3, 4, 5:6)`,
+#' would plot with one color archetypes 1 to 3, a second color archetype 4, and a
+#' third color archetype 5 and 6. Those cells not classified with the provided
+#' archetypes will be classified as "Other frontiers".
+#'
+#' If `archetypes = NULL`, by default the function will plot those archetypes with a
+#' minimum area coverage of 5% in the study area.
+#'
+#' Note that if `what = "archetypes"`, argument `metrics` will be ignored.
 #'
 #' Colors for archetypes can be defined in the `arch_colors` argument. The first element
 #' of the list must be a vector with the colors to be used for the archetypes. If
 #' `NULL`, colors will be based on the selected palette in `palette`. The
-#' second element must be a string with the color to be used for the unnamed archetype
-#' ("Other").
+#' second element must be a string with the color to be used for those cells not
+#' falling with any of the provided archetypes ("Other frontiers").
 #'
 #' Available palettes are those available for the function `scale_fill_viridis()`:
 #' "magma", "inferno", "plasma", "viridis", "cividis", "rocket", "mako", or "turbo".
@@ -138,9 +145,17 @@ ff_plot_raster <- function(df, df_excluded, fill, what, title, aspect, extent,
 #'
 #' @examples
 #' \dontrun{
+#' # Plots all calculated metrics
 #' fmetrics_plot(copo_metrics)
-#' fmetrics_plot(copo_metrics, metrics = "speed", what = "values", palette = "magma")
 #' }
+#'
+#' # Plots a single metric
+#' fmetrics_plot(copo_metrics, metrics = "speed", what = "values", palette = "magma")
+#'
+#' # Plots archetypes: 1:5, 6:10 and 11:15. Each group with a different color
+#' fmetrics_plot(copo_metrics, what = "archetypes",
+#'               archetypes = list(1:5, 6:10, 11:15),
+#'               arch_colors = list(c("firebrick", "blue", "yellow"), "gray42"))
 fmetrics_plot <- function(x,
                           metrics = "all",
                           what = "both",
@@ -149,7 +164,8 @@ fmetrics_plot <- function(x,
                           direction = 1,
                           background = c("white", "gray64"),
                           archetypes = NULL,
-                          arch_colors = list(NULL, "gray42")){
+                          arch_colors = list(NULL, "gray42"),
+                          silent = FALSE){
 
   # Argument's checking
   environment(check_fmetrics_plot) <- environment()
@@ -200,7 +216,7 @@ fmetrics_plot <- function(x,
     if(is.null(archetypes)){
       archetypes <- x@archetypes[x@archetypes$percentage > 5, "archetype"]
       if(length(archetypes) == 0) stop("There are no archetypes with a minimum area coverage of 5%. Please select desired archetypes manually.")
-      message("Archetypes with a minimum area coverage of 5% were used.")
+      if(!silent) message("Archetypes with a minimum area coverage of 5% were used.")
     } else {
       for(i in 1:length(archetypes)){
         if(any(!archetypes[[i]] %in% x@archetypes$archetype)){
@@ -211,9 +227,9 @@ fmetrics_plot <- function(x,
     }
 
     for(i in 1:length(archetypes)){
-      x@data$Archetype_label[x@data$archetype %in% archetypes[i]] <- archetypes[i]
+      x@data$Archetype_label[x@data$archetype %in% archetypes[[i]]] <- archetypes[i]
     }
-    x@data$Archetype_label[!x@data$archetype %in% archetypes] <- "Other frontiers"
+    x@data$Archetype_label[!x@data$archetype %in% unlist(archetypes)] <- "Other frontiers"
     arch_levels <- c(archetypes, "Other frontiers")
     names(arch_levels) <- c(archetypes, "Other frontiers")
     x@data$Archetype_label <- factor(x@data$Archetype_label, levels = arch_levels)
@@ -312,10 +328,6 @@ fmetrics_plot <- function(x,
   if(any(grepl("ud_", metrics))){
     ud_metrics <- metrics[grepl("ud_", metrics)]
     for(i in 1:length(ud_metrics)){
-      # plots[[length(plots)+1]] <- ff_plot_raster(x@data, x@excluded_cells,
-      #                                            ud_metrics[i], "values", ud_metrics[i],
-      #                                            aspect, x@extent,
-      #                                            palette, direction, background)
       plots[[length(plots)+1]] <- ff_plot_raster(x@data, x@excluded_cells,
                                                  ud_metrics[i], "values", ud_metrics[i],
                                                  aspect, x@extent,

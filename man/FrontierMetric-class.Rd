@@ -5,14 +5,16 @@
 \alias{FrontierMetric-class}
 \title{Class 'FrontierMetric'}
 \description{
-Object of class 'FrontierMetric' are generated with \code{\link[=fmetrics]{fmetrics()}}, and hold
+Objects of class 'FrontierMetric' are generated with \code{\link[=fmetrics]{fmetrics()}}, and hold
 the values of the calculated frontier metrics for each cell of the study area.
-Objects of this class can be passed to \code{\link[=fmetrics_plot]{fmetrics_plot()}} and \code{\link[=fmetrics_rast]{fmetrics_rast()}}.
+Objects of this class can be passed to \code{\link[=fmetrics_plot]{fmetrics_plot()}}, \code{\link[=fmetrics_summary]{fmetrics_summary()}}, and \code{\link[=fmetrics_rast]{fmetrics_rast()}}.
 }
 \section{Slots}{
 
 \describe{
 \item{\code{metrics}}{Calculated frontier metrics.}
+
+\item{\code{ud_metrics}}{Calculated user-defined frontier metrics.}
 
 \item{\code{time_frame}}{Year range of the studied time series.}
 
@@ -32,6 +34,8 @@ metrics for each individual cell of the study area.}
 \item{\code{min_rate}}{Pre-defined minimum forest loss rate during running of \code{\link[=init_fmetrics]{init_fmetrics()}}.}
 
 \item{\code{window}}{Pre-defined window of years to calculate \code{min_rate} during running of \code{\link[=init_fmetrics]{init_fmetrics()}}.}
+
+\item{\code{archetypes}}{Data frame containing the calculated archetypes for each cell of the study area.}
 
 \item{\code{excluded_cells}}{Cells excluded for future analysis (not frontiers)}
 }}

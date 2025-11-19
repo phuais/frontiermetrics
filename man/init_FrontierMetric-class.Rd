@@ -6,7 +6,7 @@
 \title{Class 'init_FrontierMetric'}
 \description{
 Objects of class 'init_FrontierMetric' are generated with \code{\link[=init_fmetrics]{init_fmetrics()}}, and hold
-the necessary objects to calculate frontier metrics with \code{\link[=fmetrics]{fmetrics()}}. The main
+the necessary structures to calculate frontier metrics with \code{\link[=fmetrics]{fmetrics()}}. The main
 object is under \verb{@data}, which is a data frame containing -among other relevant data- the amount of forest
 cover in the first year of the time series, and the amount of forest loss
 in each year of the time series, for each individual cell of the study area.
@@ -40,7 +40,7 @@ in each year of the time series, for each individual cell of the study area.
 
 \item{\code{window}}{Pre-defined window of years to calculate \code{min_rate} during running of \code{\link[=init_fmetrics]{init_fmetrics()}}.}
 
-\item{\code{temporal_windows}}{Pre-defined time windows, relevant for activeness metric.}
+\item{\code{temporal_windows}}{Pre-defined temporal windows, relevant for metric of activeness.}
 
 \item{\code{excluded_cells}}{Cells excluded for future analysis (not frontiers)}
 }}

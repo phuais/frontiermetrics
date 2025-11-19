@@ -6,7 +6,7 @@
 \title{Class 'FrontierMetric_breaks'}
 \description{
 Objects of class 'FrontierMetric_breaks' are generated with \code{\link[=breaks_rules]{breaks_rules()}}.
-It holds the definition of rules to categorize the values of frontier metrics
+They hold the set of rules to categorize the continuous values of frontier metrics
 into discrete classes.
 }
 \section{Slots}{

@@ -1,22 +1,24 @@
 #' Calculates summary statistics of frontier metrics
 #'
-#' Calculates basic statistics of absolute values of frontier metrics and plots
-#' histograms. Also, it calculates the total area of each class within each frontier metric.
+#' Calculates basic statistics of continuous values of frontier metrics, plots
+#' histograms, and calculates the total area of each class within each frontier metric.
 #'
 #' @param x Object of class 'FrontierMetric' generated with [fmetrics()].
-#' @param metrics Frontier metrics to consider. Options are: "baseline", "loss",
-#' "fragmentation", "speed", "activeness" and/or "left" for individual frontier
-#' metrics; "severity", "spatio_temporal" and/or "development" for frontier typologies;
-#' "all" to calculate all frontier metrics available within `x`. Default is "all".
+#' @param metrics Frontier metrics to be plotted. Options include those calculated
+#' frontier metrics (including user-defined metrics) or "all" to calculate all frontier
+#' metrics available within `x`. Default is "all".
 #'
-#' @return A list with three elements: (1) a data frame with basic summary statistics;
+#' @details
+#' User-defined metrics can not be passed to this function.
+#'
+#' @return A list with three elements:
+#' (1) a data frame with basic summary statistics;
 #' (2) a data frame with the total area of each class within each frontier metric; and
 #' (3) a ggplot object with histograms of frontier metrics.
 #'
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' summ <- fmetrics_summary(copo_metrics)
 #' summ
 #'
@@ -28,7 +30,6 @@
 #'
 #' # Access and plotting of histograms
 #' summ@hists
-#' }
 fmetrics_summary <- function(x, metrics = "all"){
 
   # Argument's checking

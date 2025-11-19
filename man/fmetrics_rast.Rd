@@ -4,44 +4,61 @@
 \alias{fmetrics_rast}
 \title{Exports raster layers of frontier metrics}
 \usage{
-fmetrics_rast(x, metrics = "all", dir = NULL, gdal = NULL, overwrite = TRUE)
+fmetrics_rast(
+  x,
+  metrics = "all",
+  dir = "",
+  gdal = NULL,
+  overwrite = TRUE,
+  silent = FALSE
+)
 }
 \arguments{
-\item{x}{An object of class 'FrontierMetric' generated with \code{\link[=fmetrics]{fmetrics()}}}
+\item{x}{An object of class 'FrontierMetric' generated with \code{\link[=fmetrics]{fmetrics()}}.}
 
-\item{metrics}{Frontier metrics to be exported as raster layers. Options are: "baseline", "loss",
-"fragmentation", "speed", "activeness", and/or "left" for individual frontier
-metrics; "severity", "spatio_temporal", and/or "development" for frontier typologies; "archetypes"
-for frontier archetypes; "all" for all frontier metrics and archetypes available within \code{x}.
+\item{metrics}{Frontier metrics to be plotted. Options include those calculated
+frontier metrics (including user-defined metrics), "archetypes"
+for frontier archetypes, or "all" for all frontier metrics and archetypes available within \code{x}.
 Default is "all".}
 
-\item{dir}{Path to the directory where to export raster layers.}
+\item{dir}{Path to the directory where raster layers will be exported. By default,
+the current directory.}
 
-\item{gdal}{GDAL driver specific datasource creation options. See the GDAL documentation.}
+\item{gdal}{GDAL driver specific datasource creation options. See ?terra::writeRaster for details.}
 
 \item{overwrite}{Logical. If \code{TRUE}, files will be overwritten.}
+
+\item{silent}{Logical. If \code{TRUE}, suppresses messages. Default is \code{FALSE}.}
 }
 \value{
-Invisible. Exports raster layers as .tif files. Absolute values, discrete classes
-of each metric, and frontier archetypes are exported as separate layers within each .tif file.
+Invisible. Exports raster layers of metrics and archetypes as .tif files.
 A text file named README.txt with details on the discrete classes, and another text file
-named ARCHETYPES.txt with a table with definitions of the archetypes, are also created.
+named archetypes.txt with a table with definitions of the archetypes, are also created.
 }
 \description{
 Based on an object of class 'FrontierMetric', exports raster layers of
-frontier metrics, both the absolute values and the
+frontier metrics, both the continuous values and the
 discrete classes, as well as frontier archetypes.
 }
 \details{
-Raster layers are exported as .tif files, with the following names:
-"baseline_forest.tif", "forest_loss.tif,"speed.tif", "fragmentation.tif",
-"activeness.tif", and "forest_left.tif". Raster layer of archetypes is exported
+Raster layers are exported as .tif files named after each exported metric, including
+continuous and discrete categories within each raster layer. Raster layer of archetypes is exported
 as "archetypes.tif". In addition, a raster layer named "is_frontier.tif" is
-also exported, which shows cells that are frontiers (value = 1) and those that
-are not (value = 0).
+also exported, which depict cells classified as frontiers (value = 1) and those that
+were not (value = 0).
+
+This function is also used by \code{\link[=fmetrics]{fmetrics()}} to export raster layers of frontier metrics and
+archetypes, if a path to a directory is defined when running this function.
 }
 \examples{
 \dontrun{
+# Export all available metrics as raster layers, including archetypes
 fmetrics_rast(copo_metrics)
+
+# Export a a single metric as a raster layer
+fmetrics_rast(copo_metrics, metrics = "left")
+
+# Export only archetypes
+fmetrics_rast(copo_metrics, metrics = "archetypes")
 }
 }

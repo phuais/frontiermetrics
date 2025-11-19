@@ -2,13 +2,16 @@
 % Please edit documentation in R/methods.R
 \name{show,FrontierMetric_summary-method}
 \alias{show,FrontierMetric_summary-method}
-\title{Show 'FrontierMetric_summary' object}
+\title{Shows 'FrontierMetric_summary' object}
 \usage{
 \S4method{show}{FrontierMetric_summary}(object)
 }
 \arguments{
 \item{object}{Prints relevant information about a 'FrontierMetric_summary' object.}
 }
+\value{
+No return value.
+}
 \description{
-Show 'FrontierMetric_summary' object
+Shows 'FrontierMetric_summary' object
 }

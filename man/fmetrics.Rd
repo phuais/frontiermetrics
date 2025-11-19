@@ -12,6 +12,7 @@ fmetrics(
   dir = NULL,
   gdal = NULL,
   overwrite = TRUE,
+  export_archetypes = FALSE,
   ncores = 1,
   silent = FALSE
 )
@@ -31,11 +32,14 @@ frontier and the minimum years to consider frontier onset. See Details.}
 to define discrete classes for individual frontier metrics. See Details.}
 
 \item{dir}{A path to a directory to export raster layers of frontier metrics. If \code{NULL},
-(default) raster layers will not be exported, but stored in as an R object.}
+(default) raster layers will not be exported. See Details.}
 
 \item{gdal}{GDAL driver specific datasource creation options. See ?terra::writeRaster for details.}
 
 \item{overwrite}{Logical. If \code{TRUE} (default), raster layers files will be overwritten.}
+
+\item{export_archetypes}{Logical. If \code{TRUE} and a path is provided in \code{dir},
+raster layer of archetypes will be exported. Default is \code{FALSE}.}
 
 \item{ncores}{Numbers of cores to parallelize processes. Default is 1. See Details.}
 
@@ -43,7 +47,8 @@ to define discrete classes for individual frontier metrics. See Details.}
 }
 \value{
 An object of class 'FrontierMetric', containing a dataset with the calculated frontier metrics
-for each individual cell. This object can be passed to \code{\link[=fmetrics_summary]{fmetrics_summary()}}, \code{\link[=fmetrics_plot]{fmetrics_plot()}}, and \code{\link[=fmetrics_rast]{fmetrics_rast()}}.
+for each individual cell. This object can be passed to \code{\link[=fmetrics_summary]{fmetrics_summary()}},
+\code{\link[=fmetrics_plot]{fmetrics_plot()}}, and \code{\link[=fmetrics_rast]{fmetrics_rast()}}. Raster
 }
 \description{
 Given a structured dataset of class 'init_FrontierMetric', generated with \code{\link[=init_fmetrics]{init_fmetrics()}},
@@ -71,38 +76,37 @@ was active along the time-frame. Time-windows can be visualized, before calculat
 by inspecting the slot \verb{@temporal_windows} of an object of class 'init_FrontierMetric' generated
 with \code{init_fmetrics()} and provided in argument \code{x} of \code{fmetrics()}. For instance,
 if we consider a time-frame of 2000-2024 and a temporal window of 5 years, the
-temporal windows for this time-frame will be:
-
-\tabular{rrr}{
-window \tab first_year \tab last_year \cr
-1  \tab 2001 \tab 2005 \cr
-2  \tab 2002 \tab 2006 \cr
-3  \tab 2003 \tab 2007 \cr
-4  \tab 2004 \tab 2008 \cr
-5  \tab 2005 \tab 2009 \cr
-6  \tab 2006 \tab 2010 \cr
-7  \tab 2007 \tab 2011 \cr
-8  \tab 2008 \tab 2012 \cr
-9  \tab 2009 \tab 2013 \cr
-10 \tab 2010 \tab 2014 \cr
-11 \tab 2011 \tab 2015 \cr
-12 \tab 2012 \tab 2016 \cr
-13 \tab 2013 \tab 2017 \cr
-14 \tab 2014 \tab 2018 \cr
-15 \tab 2015 \tab 2019 \cr
-16 \tab 2016 \tab 2020 \cr
-17 \tab 2017 \tab 2021 \cr
-18 \tab 2018 \tab 2022 \cr
-19 \tab 2019 \tab 2023 \cr
-20 \tab 2020 \tab 2024 \cr
+temporal windows for this time-frame will be:\tabular{lll}{
+   window     \tab first_year     \tab last_year     \cr
+   1 \tab 2001 \tab 2005 \cr
+   2 \tab 2002 \tab 2006 \cr
+   3 \tab 2003 \tab 2007 \cr
+   4 \tab 2004 \tab 2008 \cr
+   5 \tab 2005 \tab 2009 \cr
+   6 \tab 2006 \tab 2010 \cr
+   7 \tab 2007 \tab 2011 \cr
+   8 \tab 2008 \tab 2012 \cr
+   9 \tab 2009 \tab 2013 \cr
+   10 \tab 2010 \tab 2014 \cr
+   11 \tab 2011 \tab 2015 \cr
+   12 \tab 2012 \tab 2016 \cr
+   13 \tab 2013 \tab 2017 \cr
+   14 \tab 2014 \tab 2018 \cr
+   15 \tab 2015 \tab 2019 \cr
+   16 \tab 2016 \tab 2020 \cr
+   17 \tab 2017 \tab 2021 \cr
+   18 \tab 2018 \tab 2022 \cr
+   19 \tab 2019 \tab 2023 \cr
+   20 \tab 2020 \tab 2024 \cr
 }
 
+
 If \code{activeness_levels = NULL}, frontier activeness will be classified in "emerging" (active
-during temporal windows X to X), "active" (active during temporal windows X to X) or
-"old" (active during temporal windows X to X). These categories can be changed. For instance,
-if \code{activeness_levels = list(emerging = X, old = X, very_old = X)}, three levels of
+during temporal window 20), "active" (active during temporal windows 16 to 19) or
+"old" (active during temporal windows 1 to 15). These categories can be changed. For instance,
+if \code{activeness_levels = list(emerging = 19:20, old = 15:18, very_old = 1:14)}, three levels of
 activeness will be considered, according to the provided temporal windows for each one.
-All temporal windows must be considered in any of the defined activeness levels.
+All temporal windows must be considered in the defined activeness levels.
 
 If \code{onset_min_years = 3} (default), onset will refer to the year of onset of the deforestation frontier, calculated as the
 first year with at least 3 years of consecutive forest loss. The user can change this
@@ -130,7 +134,8 @@ frontier classification. Archetypes can be accessed through \verb{@archetypes} i
 the outputted object.
 
 If a path is provided in \code{dir} (default is \code{NULL}), raster layers of frontier metrics will be
-exported as .tif files. GDAL options can be defined in argument \code{gdal}. See ?terra::writeRaster for details.
+exported as .tif files. Use \code{dir = ""} to export files to current  directory.
+GDAL options can be defined in argument \code{gdal}. See ?terra::writeRaster for details.
 
 Parallelization is recommended for very large datasets (ncores > 1).
 The calculation of the fragmentation metrics is the most computationally intensive.
@@ -139,24 +144,19 @@ If needed, increase the number of cores. The calculation of this particular metr
 parallelization requires the \code{snowfall} package.
 }
 \examples{
-\dontrun{
 # Downloads example of object of class 'init_FrontierMetric' generated with init_fmetrics()
-download.file(frontiermetrics_data[4], "copo_dataset.RDS")
+curl::curl_download(frontiermetrics_data[4], file.path(tempdir(), "copo_dataset.RDS"))
 
 # Loads object to R environment
-copo_dataset <- readRDS("copo_dataset.RDS")
+copo_dataset <- readRDS(file.path(tempdir(), "copo_dataset.RDS"))
 
-# Calculates all frontier metrics
-copo_metrics <- fmetrics(copo_dataset, metrics = "all", ncores = 2)
+# Calculates specific metrics;
+#   Use "all" for all available metrics;
+#   Use dir = "path_to_directory" to also export as raster layers
+copo_metrics2 <- fmetrics(copo_dataset, metrics = c("baseline", "speed", "left", "onset"))
 
-# Calculates development frontiers
-copo_metrics2 <- fmetrics(copo_dataset, metrics = "development", ncores = 2)
+# Inspect generated object
 copo_metrics2
-
-# Calculates a single frontier
-copo_metrics3 <- fmetrics(copo_dataset, metrics = "speed", ncores = 2)
-copo_metrics3
-}
 }
 \references{
 Buchadas, A., Baumann, M., Meyfroidt, P., & Kuemmerle, T. (2022). Uncovering major types of

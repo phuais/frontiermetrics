@@ -98,7 +98,6 @@ calc_fm_loss_frag <- function(x, classes_sub, ncores){
     }
   }
   if(ncores > 1) snowfall::sfStop()
-  #parabar::stop_backend(backend)
 
   ds_ed_years$loss_frag <- apply(ds_ed_years[, 2:ncol(ds_ed_years)], 1, max)
   ds_ed_years <- ds_ed_years[, c("id", "loss_frag"), with = F]

@@ -22,7 +22,7 @@
 #' @references
 #' Hansen, M. C., Potapov, P. V., Moore, R., Hancher, M., Turubanova, S. A., Tyukavina, A.,
 # ... & Townshend, J. R. (2013). High-resolution global maps of 21st-century forest cover change. science, 342(6160), 850-853.
-"GFL_2023_v1.11_treecover2000"
+"GFL_2024_v1.12_treecover2000"
 
 #' Data frame containing the links to each tile of forest loss from Global Forest Watch (Hansen et al. 2013).
 #' It is intended to be used for internal functions of the package.
@@ -30,7 +30,7 @@
 #' @references
 #' Hansen, M. C., Potapov, P. V., Moore, R., Hancher, M., Turubanova, S. A., Tyukavina, A.,
 #' ... & Townshend, J. R. (2013). High-resolution global maps of 21st-century forest cover change. science, 342(6160), 850-853.
-"GFL_2023_v1.11_loss"
+"GFL_2024_v1.12_loss"
 
 #' URLs to download data for example use.
 "frontiermetrics_data"

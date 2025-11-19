@@ -9,22 +9,24 @@ fmetrics_summary(x, metrics = "all")
 \arguments{
 \item{x}{Object of class 'FrontierMetric' generated with \code{\link[=fmetrics]{fmetrics()}}.}
 
-\item{metrics}{Frontier metrics to consider. Options are: "baseline", "loss",
-"fragmentation", "speed", "activeness" and/or "left" for individual frontier
-metrics; "severity", "spatio_temporal" and/or "development" for frontier typologies;
-"all" to calculate all frontier metrics available within \code{x}. Default is "all".}
+\item{metrics}{Frontier metrics to be plotted. Options include those calculated
+frontier metrics (including user-defined metrics) or "all" to calculate all frontier
+metrics available within \code{x}. Default is "all".}
 }
 \value{
-A list with three elements: (1) a data frame with basic summary statistics;
+A list with three elements:
+(1) a data frame with basic summary statistics;
 (2) a data frame with the total area of each class within each frontier metric; and
 (3) a ggplot object with histograms of frontier metrics.
 }
 \description{
-Calculates basic statistics of absolute values of frontier metrics and plots
-histograms. Also, it calculates the total area of each class within each frontier metric.
+Calculates basic statistics of continuous values of frontier metrics, plots
+histograms, and calculates the total area of each class within each frontier metric.
+}
+\details{
+User-defined metrics can not be passed to this function.
 }
 \examples{
-\dontrun{
 summ <- fmetrics_summary(copo_metrics)
 summ
 
@@ -36,5 +38,4 @@ summ@classes_areas
 
 # Access and plotting of histograms
 summ@hists
-}
 }

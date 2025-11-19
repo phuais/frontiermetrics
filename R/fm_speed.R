@@ -5,16 +5,16 @@ calc_fm_speed <- function(x, classes_sub){
                   .SDcols = c(x@initial_fc_col, x@fl_cols)]
 
   # Forest cover over the years and % of forest loss per year
-  prev_col <- x@initial_fc_col
-  for(i in 1:length(x@fl_cols)){
-    col_name <- paste0("FC_", substring(x@fl_cols[i], first = 4, last = nchar(x@fl_cols[i])))
-    fm_ds[[col_name]] <- fm_ds[[prev_col]] - fm_ds[[x@fl_cols[i]]]
-    fm_ds[[paste0(col_name, "d")]] <- fm_ds[[x@fl_cols[i]]] / fm_ds[[prev_col]]
-    prev_col <- col_name
-  }
+  # prev_col <- x@initial_fc_col
+  # for(i in 1:length(x@fl_cols)){
+  #   col_name <- paste0("FC_", substring(x@fl_cols[i], first = 4, last = nchar(x@fl_cols[i])))
+  #   fm_ds[[col_name]] <- fm_ds[[prev_col]] - fm_ds[[x@fl_cols[i]]]
+  #   fm_ds[[paste0(col_name, "d")]] <- fm_ds[[x@fl_cols[i]]] / fm_ds[[prev_col]]
+  #   prev_col <- col_name
+  # }
 
   fm_ds <- fm_ds[!is.na(fm_ds[[x@initial_fc_col]]), ]
-  fm_ds <- fm_ds[ , c(1:2, grep("FL_", colnames(fm_ds))), with = F]
+  fm_ds <- fm_ds[, c(1:2, grep("FL_", colnames(fm_ds))), with = F]
   fm_ds <- as.data.table(fm_ds)
   fm_ds <- fm_ds[, -x@initial_fc_col, with = F]
 
@@ -69,6 +69,3 @@ calc_fm_speed <- function(x, classes_sub){
 
   return(out)
 }
-
-
-

@@ -204,6 +204,13 @@ check_fmetrics <- function(){
     what     <- append(what, 2)
   }
 
+  # export_archetypes
+  if(!is.logical(export_archetypes)){
+    messages <- append(messages, paste("- argument 'export_archetypes' must be logical. Default was taken (FALSE)"))
+    what     <- append(what, 1)
+    export_archetypes <- FALSE
+  }
+
   # ncores
   if(!is.numeric(ncores)){
     messages <- append(messages, paste("- argument 'ncores' must be a number that specifies the number of cores to use to parallelize processes."))

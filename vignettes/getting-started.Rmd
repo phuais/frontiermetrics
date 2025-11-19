@@ -2,7 +2,7 @@
 title: "Introduction to frontiermetrics"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Introduction}
+  %\VignetteIndexEntry{getting-started}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

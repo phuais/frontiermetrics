@@ -367,7 +367,6 @@ init_fmetrics <- function(raster,
   foo_classes <- breaks_rules()
   foo_classes@baseline[[1]] <- c(-Inf, min_cover, Inf)
   foo_classes@baseline[[2]] <- c("excluded", "included")
-  if(!silent) cat("\n> Finding deforestation frontiers")
   foo_metrics <- fmetrics(x = out,
                           metrics = c("baseline", "activeness"),
                           params = list(activeness_levels = list(included = T_ranges$window),

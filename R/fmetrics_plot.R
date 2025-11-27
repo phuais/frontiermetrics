@@ -336,6 +336,6 @@ fmetrics_plot <- function(x,
   }
 
   if(ncol > length(plots)) ncol <- length(plots)
-  egg::ggarrange(plots = plots, ncol = ncol)
+  suppressMessages(egg::ggarrange(plots = plots, ncol = ncol))
 }
 

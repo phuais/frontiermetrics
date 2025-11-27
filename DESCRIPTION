@@ -51,7 +51,9 @@ Roxygen: list(markdown = TRUE)
 Suggests: 
     snowfall,
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat (>= 3.0.0)
 VignetteBuilder: knitr
 URL: https://github.com/phuais/frontiermetrics
 BugReports: https://github.com/phuais/frontiermetrics/issues
+Config/testthat/edition: 3

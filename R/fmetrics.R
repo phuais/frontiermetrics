@@ -299,7 +299,6 @@ fmetrics <- function(x,
   if(!silent) message("Calculating metrics")
 
   if("baseline" %in% metrics){
-    if(!silent) message("   baseline forest")
     foo <- calc_fm_baseline(x, breaks@baseline)
     out <- dt_append(out, foo)
   }

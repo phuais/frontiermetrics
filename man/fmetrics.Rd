@@ -113,6 +113,16 @@ If \code{onset_min_years = 3} (default), onset will refer to the first year of t
 that exhibited forest loss in a number of 3 consecutive years. The user can change this
 parameter to a lower or higher minimum number of years.
 
+\emph{
+Note that these metrics were initially programmed to work with Global Forest Watch
+datasets, and excluding the process of forest gain. This could be relevant for the
+calculation of some of these metrics, if a custom time-series of forest cover is
+provided, and the process of forest gain is considered within this time-series. In
+addition, these metrics where initially thought for the process of forest loss in
+tropical and subtropiccal regions. Any other use for a different cover or region
+should be applied with caution, and these metrics might need particular adjustments.
+}
+
 For advanced R users, user-defined metrics can also be calculated. The user must
 create an R function (named "ud_" + "metric_name"; e.g. "ud_metric1") that would receive a unique argument \code{x}, an object of class
 \code{init_FrontierMetric} generated with \code{init_fmetrics()}, work with the structured

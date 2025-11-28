@@ -21,7 +21,7 @@ fmetrics_plot(
 \item{x}{Object of class 'FrontierMetric' generated with \code{\link[=fmetrics]{fmetrics()}}}
 
 \item{metrics}{Frontier metrics to be plotted. Options include those calculated
-frontier metrics (including user-defined metrics) or "all" to calculate all frontier
+frontier metrics in \code{x} (including user-defined metrics) or "all" to calculate all frontier
 metrics available within \code{x}. Default is "all".}
 
 \item{what}{One of the following: "both", to plot continuous values and discrete
@@ -29,13 +29,13 @@ classes of frontier metrics; "values", to plot only continuous values; "classes"
 to plot only discrete classes; or "archetypes", to plot frontier archetypes.
 Default is "both". See Details.}
 
-\item{ncol}{Number of columns to arrange plots. Default is 4.}
+\item{ncol}{Number of columns to arrange plots. The number of rows is automatically
+calculated based on this number. Default is 4.}
 
-\item{palette}{String with the name of the palette to be used
-in the plots. Default is \code{"viridis"}. See Details.}
+\item{palette}{A string with the name of the palette to be used
+for the metric values. Default is \code{"viridis"}. See Details.}
 
-\item{direction}{Either 1 (default) or -1, indicating the direction of the palette
-for the continuous values of frontier metrics and discrete classes. See Details.}
+\item{direction}{Either 1 (default) or -1, indicating the direction of the palette. See Details.}
 
 \item{background}{A vector of two strings with the names of the colors to be used
 for the background of the plot. The first depicts the color for the region outside
@@ -50,12 +50,12 @@ coverage of 5\% will be plotted. See Details.}
 
 \item{arch_colors}{A list of two elements. The first element is a vector with the colors
 to be used for the archetypes. The second element is a string with the color to be used
-for the unnamed archetypes ("Other").}
+for the unnamed archetypes ("Other frontiers").}
 
 \item{silent}{Logical. If \code{TRUE}, suppresses messages. Default is \code{FALSE}.}
 }
 \description{
-Generates plots of frontier metrics based on an object of class 'FrontierMetric'
+Generates maps of frontier metrics based on an object of class 'FrontierMetric'
 generated with \code{\link[=fmetrics]{fmetrics()}}
 }
 \details{
@@ -67,16 +67,15 @@ of different frontier metric classes that might represent a higher order of
 frontier classification. Archetypes are automatically calculated when \code{x} is generated with
 \code{fmetrics()}, and can be seen by running \code{x@archetypes}. To plot archetypes, the
 user must indicate \code{what = "archetypes"}, and a list of archetypes in argument
-\code{archetypes}. Each element of the list can contain a unique archetype, but
-also encompass more archetypes. For instance, \code{archetypes = list(1:3, 4, 5:6)},
-would plot with one color archetypes 1 to 3, a second color archetype 4, and a
-third color archetype 5 and 6. Those cells not classified with the provided
+\code{archetypes}. Each element of the list can depict a unique archetype, but
+also encompass a combination of them. For instance, \code{archetypes = list(1:3, 4, 5:6)},
+would plot with one color archetypes 1, 2, and 3, a second color will be used for archetype 4, and a
+third color will be used for archetypes 5 and 6. Those cells not classified with the provided
 archetypes will be classified as "Other frontiers".
 
 If \code{archetypes = NULL}, by default the function will plot those archetypes with a
-minimum area coverage of 5\% in the study area.
-
-Note that if \code{what = "archetypes"}, argument \code{metrics} will be ignored.
+minimum area coverage of 5\% in the study area. Note that if \code{what = "archetypes"},
+argument \code{metrics} will be ignored.
 
 Colors for archetypes can be defined in the \code{arch_colors} argument. The first element
 of the list must be a vector with the colors to be used for the archetypes. If
@@ -86,9 +85,8 @@ falling with any of the provided archetypes ("Other frontiers").
 
 Available palettes are those available for the function \code{scale_fill_viridis()}:
 "magma", "inferno", "plasma", "viridis", "cividis", "rocket", "mako", or "turbo".
-The \code{direction} argument is used to reverse the palette if necessary. To do this
-the user must specify -1. The user can play with different background colors for
-better visualization.
+The \code{direction} argument is used to reverse the palette if necessary. The user can
+play with different background colors for better visualization.
 }
 \examples{
 \dontrun{

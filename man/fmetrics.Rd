@@ -26,7 +26,7 @@ fmetrics(
 can also be calculated. See Details.}
 
 \item{params}{List of parameters related to the levels of activeness of a
-frontier and the minimum years to consider frontier onset. See Details.}
+frontier and the minimum years to consider for the 'onset' metric. See Details.}
 
 \item{breaks}{An object of class 'FrontierMetric_breaks' generated with \code{\link[=breaks_rules]{breaks_rules()}}, containing the rules
 to define discrete classes for individual frontier metrics. See Details.}
@@ -39,7 +39,7 @@ to define discrete classes for individual frontier metrics. See Details.}
 \item{overwrite}{Logical. If \code{TRUE} (default), raster layers files will be overwritten.}
 
 \item{export_archetypes}{Logical. If \code{TRUE} and a path is provided in \code{dir},
-raster layer of archetypes will be exported. Default is \code{FALSE}.}
+raster layer of archetypes will also be exported. Default is \code{FALSE}.}
 
 \item{ncores}{Numbers of cores to parallelize processes. Default is 1. See Details.}
 
@@ -48,11 +48,11 @@ raster layer of archetypes will be exported. Default is \code{FALSE}.}
 \value{
 An object of class 'FrontierMetric', containing a dataset with the calculated frontier metrics
 for each individual cell. This object can be passed to \code{\link[=fmetrics_summary]{fmetrics_summary()}},
-\code{\link[=fmetrics_plot]{fmetrics_plot()}}, and \code{\link[=fmetrics_rast]{fmetrics_rast()}}. Raster
+\code{\link[=fmetrics_plot]{fmetrics_plot()}}, and \code{\link[=fmetrics_rast]{fmetrics_rast()}}.
 }
 \description{
-Given a structured dataset of class 'init_FrontierMetric', generated with \code{\link[=init_fmetrics]{init_fmetrics()}},
-calculates different deforestation frontier metrics.
+Given a structured object of class 'init_FrontierMetric' generated with \code{\link[=init_fmetrics]{init_fmetrics()}},
+calculates a set of deforestation frontier metrics.
 }
 \details{
 The \code{metrics} argument specifies which frontier metrics will be calculated. These metrics are computed for each cell and are defined as follows:
@@ -74,9 +74,9 @@ Key parameters of "activeness" and "onset" can be changed within the argument \c
 By default, \code{params = list(activeness_levels = NULL, onset_min_years = 3)}.  The level
 of frontier activeness will depend on the time-windows where the frontier
 was active along the time-frame. Time-windows can be visualized, before calculating frontiers,
-by inspecting the slot \verb{@temporal_windows} of an object of class 'init_FrontierMetric' generated
+by inspecting the slot \verb{@temporal_windows} of the object of class 'init_FrontierMetric' generated
 with \code{init_fmetrics()} and provided in argument \code{x} of \code{fmetrics()}. For instance,
-if we consider a time-frame of 2000-2024 and a temporal window of 5 years, the
+if we consider the time-frame 2000-2024 and a window of 5 years, the
 temporal windows for this time-frame will be:\tabular{lll}{
    window     \tab first_year     \tab last_year     \cr
    1 \tab 2001 \tab 2005 \cr
@@ -102,29 +102,29 @@ temporal windows for this time-frame will be:\tabular{lll}{
 }
 
 
-If \code{activeness_levels = NULL}, frontier activeness will be classified in "emerging" (active
+If \code{activeness_levels = NULL}, frontier activeness will be classified as "emerging" (active
 during temporal window 20), "active" (active during temporal windows 16 to 19) or
 "old" (active during temporal windows 1 to 15). These categories can be changed. For instance,
 if \code{activeness_levels = list(emerging = 19:20, old = 15:18, very_old = 1:14)}, three levels of
 activeness will be considered, according to the provided temporal windows for each one.
 All temporal windows must be considered in the defined activeness levels.
 
-If \code{onset_min_years = 3} (default), onset will refer to the year of onset of the deforestation frontier, calculated as the
-first year with at least 3 years of consecutive forest loss. The user can change this
-parameter to a smaller or bigger minimum number of years.
+If \code{onset_min_years = 3} (default), onset will refer to the first year of the time series
+that exhibited forest loss in a number of 3 consecutive years. The user can change this
+parameter to a lower or higher minimum number of years.
 
 For advanced R users, user-defined metrics can also be calculated. The user must
 create an R function (named "ud_" + "metric_name"; e.g. "ud_metric1") that would receive a unique argument \code{x}, an object of class
 \code{init_FrontierMetric} generated with \code{init_fmetrics()}, work with the structured
-dataset within this object (in slot \verb{@data}) as desired, and return a data.frame
-with the values of the metric for each individual cell. See vignettes for details
-and examples.
+dataset within this object as desired (available in slot \verb{@data}), and return a data.frame
+with the values of the metric for each individual cell. See the vignette for details and
+an example.
 
-In argument \code{breaks}, the user can set the rules to generate discrete
+In argument \code{breaks}, the user can define the rules to generate discrete
 classes of those continuous metrics, by providing an object of
 class 'FrontierMetric_breaks' generated with \code{\link[=breaks_rules]{breaks_rules()}}. Run \code{breaks_rules()} to
 explore these rules. By default, continuous metrics
-are divided in discrete classes by the "Jenks natural
+are divided in discrete classes by using the "Jenks natural
 breaks classification", using the function \code{BAMMtools::getJenksBreaks}.
 See ?breaks_rules to explore how to re-define categories.
 
@@ -135,14 +135,14 @@ frontier classification. Archetypes can be accessed through \verb{@archetypes} i
 the outputted object.
 
 If a path is provided in \code{dir} (default is \code{NULL}), raster layers of frontier metrics will be
-exported as .tif files. Use \code{dir = ""} to export files to current  directory.
+exported as .tif files. Use \code{dir = ""} to export files to current directory.
 GDAL options can be defined in argument \code{gdal}. See ?terra::writeRaster for details.
 
 Parallelization is recommended for very large datasets (ncores > 1).
-The calculation of the fragmentation metrics is the most computationally intensive.
+The calculation of the the metric "loss_frag" is the most computationally intensive.
 In general, it is advisable to first run the function with \code{ncores = 1} and see if it is feasible.
 If needed, increase the number of cores. The calculation of this particular metric with
-parallelization requires the \code{snowfall} package.
+parallelization requires the \code{snowfall} package to be installed.
 }
 \examples{
 # Downloads example of object of class 'init_FrontierMetric' generated with init_fmetrics()

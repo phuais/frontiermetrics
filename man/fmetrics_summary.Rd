@@ -9,7 +9,7 @@ fmetrics_summary(x, metrics = "all")
 \arguments{
 \item{x}{Object of class 'FrontierMetric' generated with \code{\link[=fmetrics]{fmetrics()}}.}
 
-\item{metrics}{Frontier metrics to be plotted. Options include those calculated
+\item{metrics}{Frontier metrics to consider. Options include those calculated
 frontier metrics (including user-defined metrics) or "all" to calculate all frontier
 metrics available within \code{x}. Default is "all".}
 }
@@ -21,10 +21,10 @@ A list with three elements:
 }
 \description{
 Calculates basic statistics of continuous values of frontier metrics, plots
-histograms, and calculates the total area of each class within each frontier metric.
+histograms, and calculates the total area of each discrete class of each frontier metric.
 }
 \details{
-User-defined metrics can not be passed to this function.
+User-defined metrics will not be considered.
 }
 \examples{
 summ <- fmetrics_summary(copo_metrics)

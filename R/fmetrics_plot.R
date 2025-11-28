@@ -79,22 +79,22 @@ ff_plot_raster <- function(df, df_excluded, fill, what, title, aspect, extent,
 
 #' Plots frontier metrics
 #'
-#' Generates plots of frontier metrics based on an object of class 'FrontierMetric'
+#' Generates maps of frontier metrics based on an object of class 'FrontierMetric'
 #' generated with [fmetrics()]
 #'
 #' @param x Object of class 'FrontierMetric' generated with [fmetrics()]
 #' @param metrics Frontier metrics to be plotted. Options include those calculated
-#' frontier metrics (including user-defined metrics) or "all" to calculate all frontier
+#' frontier metrics in `x` (including user-defined metrics) or "all" to calculate all frontier
 #' metrics available within `x`. Default is "all".
 #' @param what One of the following: "both", to plot continuous values and discrete
 #' classes of frontier metrics; "values", to plot only continuous values; "classes"
 #' to plot only discrete classes; or "archetypes", to plot frontier archetypes.
 #' Default is "both". See Details.
-#' @param ncol Number of columns to arrange plots. Default is 4.
-#' @param palette String with the name of the palette to be used
-#' in the plots. Default is `"viridis"`. See Details.
-#' @param direction Either 1 (default) or -1, indicating the direction of the palette
-#' for the continuous values of frontier metrics and discrete classes. See Details.
+#' @param ncol Number of columns to arrange plots. The number of rows is automatically
+#' calculated based on this number. Default is 4.
+#' @param palette A string with the name of the palette to be used
+#' for the metric values. Default is `"viridis"`. See Details.
+#' @param direction Either 1 (default) or -1, indicating the direction of the palette. See Details.
 #' @param background A vector of two strings with the names of the colors to be used
 #' for the background of the plot. The first depicts the color for the region outside
 #' the range of the study area, while the second depicts the color for those cells
@@ -106,7 +106,7 @@ ff_plot_raster <- function(df, df_excluded, fill, what, title, aspect, extent,
 #' coverage of 5% will be plotted. See Details.
 #' @param arch_colors A list of two elements. The first element is a vector with the colors
 #' to be used for the archetypes. The second element is a string with the color to be used
-#' for the unnamed archetypes ("Other").
+#' for the unnamed archetypes ("Other frontiers").
 #' @param silent Logical. If `TRUE`, suppresses messages. Default is `FALSE`.
 #'
 #' @export
@@ -120,16 +120,15 @@ ff_plot_raster <- function(df, df_excluded, fill, what, title, aspect, extent,
 #' frontier classification. Archetypes are automatically calculated when `x` is generated with
 #' `fmetrics()`, and can be seen by running `x@archetypes`. To plot archetypes, the
 #' user must indicate `what = "archetypes"`, and a list of archetypes in argument
-#' `archetypes`. Each element of the list can contain a unique archetype, but
-#' also encompass more archetypes. For instance, `archetypes = list(1:3, 4, 5:6)`,
-#' would plot with one color archetypes 1 to 3, a second color archetype 4, and a
-#' third color archetype 5 and 6. Those cells not classified with the provided
+#' `archetypes`. Each element of the list can depict a unique archetype, but
+#' also encompass a combination of them. For instance, `archetypes = list(1:3, 4, 5:6)`,
+#' would plot with one color archetypes 1, 2, and 3, a second color will be used for archetype 4, and a
+#' third color will be used for archetypes 5 and 6. Those cells not classified with the provided
 #' archetypes will be classified as "Other frontiers".
 #'
 #' If `archetypes = NULL`, by default the function will plot those archetypes with a
-#' minimum area coverage of 5% in the study area.
-#'
-#' Note that if `what = "archetypes"`, argument `metrics` will be ignored.
+#' minimum area coverage of 5% in the study area. Note that if `what = "archetypes"`,
+#' argument `metrics` will be ignored.
 #'
 #' Colors for archetypes can be defined in the `arch_colors` argument. The first element
 #' of the list must be a vector with the colors to be used for the archetypes. If
@@ -139,9 +138,8 @@ ff_plot_raster <- function(df, df_excluded, fill, what, title, aspect, extent,
 #'
 #' Available palettes are those available for the function `scale_fill_viridis()`:
 #' "magma", "inferno", "plasma", "viridis", "cividis", "rocket", "mako", or "turbo".
-#' The `direction` argument is used to reverse the palette if necessary. To do this
-#' the user must specify -1. The user can play with different background colors for
-#' better visualization.
+#' The `direction` argument is used to reverse the palette if necessary. The user can
+#' play with different background colors for better visualization.
 #'
 #' @examples
 #' \dontrun{

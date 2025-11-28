@@ -5,7 +5,7 @@
 #' discrete classes, as well as frontier archetypes.
 #'
 #' @param x An object of class 'FrontierMetric' generated with [fmetrics()].
-#' @param metrics Frontier metrics to be plotted. Options include those calculated
+#' @param metrics Frontier metrics to be exported. Options include those calculated
 #' frontier metrics (including user-defined metrics), "archetypes"
 #' for frontier archetypes, or "all" for all frontier metrics and archetypes available within `x`.
 #' Default is "all".
@@ -17,28 +17,29 @@
 #'
 #' @details
 #' Raster layers are exported as .tif files named after each exported metric, including
-#' continuous and discrete categories within each raster layer. Raster layer of archetypes is exported
+#' continuous and discrete classes within each raster layer. Raster layer of archetypes is exported
 #' as "archetypes.tif". In addition, a raster layer named "is_frontier.tif" is
 #' also exported, which depict cells classified as frontiers (value = 1) and those that
 #' were not (value = 0).
 #'
 #' This function is also used by [fmetrics()] to export raster layers of frontier metrics and
-#' archetypes, if a path to a directory is defined when running this function.
+#' archetypes, if a path to a directory is defined when running this function. If not,
+#' [fmetrics_rast()] can be directly used for this purpose.
 #'
 #' @return Invisible. Exports raster layers of metrics and archetypes as .tif files.
-#' A text file named README.txt with details on the discrete classes, and another text file
-#' named archetypes.txt with a table with definitions of the archetypes, are also created.
+#' The function also creates a text file named README.txt with details on the discrete classes, and a text file
+#' named archetypes.txt with a table containing the definitions of the archetypes.
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' # Export all available metrics as raster layers, including archetypes
+#' # Exports all available metrics as raster layers, including archetypes
 #' fmetrics_rast(copo_metrics)
 #'
-#' # Export a a single metric as a raster layer
+#' # Exports a single metric as a raster layer
 #' fmetrics_rast(copo_metrics, metrics = "left")
 #'
-#' # Export only archetypes
+#' # Exports only archetypes
 #' fmetrics_rast(copo_metrics, metrics = "archetypes")
 #' }
 fmetrics_rast <- function(x,

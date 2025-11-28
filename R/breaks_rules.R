@@ -1,16 +1,16 @@
-#' Sets the rules to categorize frontier metrics
+#' Defines the rules to categorize frontier metrics
 #'
-#' Defines rules to generate discrete categories for continuous frontier metrics.
+#' For those continuous frontier metrics, defines rules to generate discrete classes.
 #'
 #' @param baseline,baseline_frag,loss,loss_frag,speed,left A list defining the
-#' rules to define discrete classes for each frontier metric. See Details.
+#' rules for the discrete classes of continuous frontier metrics. See Details.
 #'
 #' @details
-#' For each metric, the user must provide a list. The first element of the list
+#' For each continuous metric, the user must provide a list. The first element of the list
 #' defines the algorithm to be used for the categorization. The second element of  the list must be a character vector with the names
-#' for each category that will be generated.
+#' for each class that will be generated.
 #'
-#' The following algoritms are available (first element of the list):
+#' The following algorithms are available (first element of the list):
 #'
 #' (1) "jenks" (default): Jenks natural breaks classification (uses BAMMtools::getJenksBreaks).
 #' The number (n) of intervals is given by the number of categories provided
@@ -23,17 +23,17 @@
 #' (3) "quantile": splits observations by quantiles so that each bin contains (roughly)
 #' the same number of observations (frontier cells). Quantiles are calculated given
 #' the number of categories provided in the second element of the list. For instance,
-#' if 4 categories are provided, the following intervals be used as cuts: 0-0.25, 0.25-0.5, 0.5-0.75, and 0.75-1.
+#' if 4 categories are provided, the following intervals will be used: 0-0.25, 0.25-0.5, 0.5-0.75, and 0.75-1.
 #'
 #' (4) Alternatively, a numeric vector with two or more unique cut points can be
 #' provided. For example: `c(5, 10, 55, Inf)`, and the categories (second element
-#' of the list) could be `c("Low", "Medium", "High")`, where "Low": 5-10, "Medium": 10-55, and
+#' of the list) `c("Low", "Medium", "High")`, where "Low": 5-10, "Medium": 10-55, and
 #' "High": 55-Inf.
 #'
 #' When assigned to an object, the new definition of classes can be passed to [fmetrics()],
 #' inside the argument `breaks`, to generate frontier metrics's classes with a new definition.
 #'
-#' @return An object of class 'FronterMetric_classes' to be used in argument `breaks` within [fmetrics()].
+#' @return An object of class 'FronterMetric_classes' to be used in argument `breaks` in [fmetrics()].
 #' @export
 #'
 #' @examples
@@ -46,6 +46,7 @@
 #' #   High: Higher than 70
 #' breaks_1 <- breaks_rules(baseline = list(c(5, 20, 70, Inf),
 #'                                          c("Low", "Medium", "High")))
+#' # The rules for the rest of the metrics will be those by default
 #'
 #' # Shows new defined rules
 #' breaks_1

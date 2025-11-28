@@ -41,43 +41,42 @@ get_FL <- function(i, rast_loss, cell_size, aggregation, years, ncores, is_serie
 #' the provided raster series has continuous values of forest cover. Ignored if
 #' `is_series = FALSE`. See Details.
 #' @param min_treecover A number (percentage) depicting the minimum percentage of tree
-#' cover to be considered as "forest". Default is 10%. Ignored if `is_series = TRUE`. See Details.
-#' @param aggregation A numeric vector of length two, depicting the first and second
+#' cover to be considered as "forest". Default is 10. Ignored if `is_series = TRUE`. See Details.
+#' @param aggregation A numeric vector of length 2, depicting the first and second
 #' magnitude of aggregation. See Details.
 #' @param time_frame A numeric vector of two elements depicting the first and last year of the analyzed time-frame.
 #' Default is c(2000, 2024). See Details.
 #' @param min_cover A number (percentage) depicting the minimum percentage of forest
 #' cover for a cell to be considered a frontier. Default is 5. See Details.
 #' @param min_rate A number (percentage) depicting the minimum average annual forest loss rate
-#' in a five-year period for a cell to be considered a frontier. Default is 0.5. See Details.
-#' @param window A whole number depicting the number of years to consider in the calculation of activeness.
-#' Default is 5. See Details.
+#' in a five-year period (when `window = 5`) for a cell to be considered a frontier. Default is 0.5. See Details.
+#' @param window A whole number depicting the number of years to consider in the calculation of
+#' frontier activeness. Default is 5. See Details.
 #' @param ncores Numbers of cores to parallelize processes. Default is 1.
 #' @param silent Logical. If `TRUE`, suppresses messages. Default is `FALSE`.
 #'
 #' @details
-#' Deforestation frontier metrics were initially developed to be calculated with Global Forest Watch databases
-#' (Buchadas et al. 2022; Hansen et al. 2013). If data from Global Forest Watch is used, `is_series` must equal
+#' Deforestation frontier metrics were initially developed to be calculated using Global Forest Watch databases
+#' (GFW) (Buchadas et al. 2022; Hansen et al. 2013). If data from GFW is used, `is_series` must equal
 #' `FALSE`, the option by default. Then, a list with two main raster layers from this source must be provided,
 #' in the following order:
 #'
 #' (1) a raster layer (class 'SpatRaster' or a path to a raster layer) of initial forest cover in year 2000.
-#' The values for this raster layer typically ranges
-#' between 0 and 100, depicting the percentage of tree cover of each individual cell
-#' (at a resolution of ~30m).
+#' The values for this raster layer typically ranges between 0 and 100, depicting
+#' the percentage of tree cover of each individual cell (at a resolution of ~30m).
 #'
 #' (2) a raster layer (class 'SpatRaster' or a path to a raster layer) of forest loss between years 2001
 #' and 2024. This is a single raster layer where 0 indicates no loss, while values of 1, 2, 3, etc.,
 #' represent forest loss occurring in years 2001, 2002, 2003, and so on.
 #'
 #' Both raster layers can be previously downloaded and processed with [get_gfw()], which will
-#' access the Global Forest Watch database. See `?get_gfw` for detailed
-#' documentation. The user must also define a minimum percentage of tree cover for a cell to be considered
-#' "forest". Usually, 10% is used for subtropical dry forests, and 5% for tropical forests.
+#' access GFW sources. See `?get_gfw` for details. The user must also define a minimum
+#' percentage of tree cover (in argument `min_treecover`) for a cell to be considered
+#' "forest". By default, this is 10%.
 #'
 #' The argument `time_frame` must represent the first and last year of the time-series.
-#' By default, [get_gfw()] downloads forest cover in the year 2000 (as provided by GFW datasets), and `time_frame` equals
-#' c(2000, 2024). If an year different than 2000 is defined, the function will calculate the
+#' By default, [get_gfw()] downloads forest cover in the year 2000 (as provided by GFW datasets), so `time_frame` equals
+#' `c(2000, 2024)`. If an year different than 2000 is defined, the function will calculate the
 #' forest cover for the provided year, by subtracting the accumulated forest loss from the
 #' layer of forest cover in 2000 until the provided year. Note that forest gain is
 #' not considered in any step.
@@ -89,35 +88,35 @@ get_FL <- function(i, rast_loss, cell_size, aggregation, years, ncores, is_serie
 #' each consecutive year of the analyzed time series. A cell of value 1 will be
 #' considered as covered by forest, while 0 will be considered as a different
 #' cover. Alternatively, each layer of the raster series can be continuous,
-#' representing a continuous value of natural cover in km², and argument
+#' representing a continuous value of forest cover in km², and argument
 #' `is_continuous` must be `TRUE`. In addition, when `is_series = TRUE`, argument `time_frame` must
 #' represent the first and last year of the time-series. The number of years
-#' given by this range must match the number of layers of the cover time-series
+#' provided by this range must match the number of layers of the cover time-series
 #' provided in `raster`.
 #'
 #' Forest cover and forest loss data can be aggregated, which is recommended.
 #' Aggregation is done in two steps. First, cells are aggregated using the first
 #' value of the aggregation argument, which represents the number of cells to merge
-#' in each direction (horizontal and vertical). In this step, the values of forest cover of all
-#' included cells are summed, and the amount of forest loss is calculated for each new aggregated cell.
+#' in each direction (horizontal and vertical). In this step, the values of forest cover in the baseline year of all
+#' included cells are summed, as well as the amount of forest loss in subsequent years.
 #' Second, the newly aggregated cells are further
 #' grouped using the second value of the aggregation argument. At this stage,
 #' each cell from the initial aggregation is merged into larger cells,
 #' which will serve as the basis for calculating frontier metrics. Since GFW raster layers have a resolution of approximately 30m (at the equator),
 #' setting `aggregation = c(10, 10)` (default setting) will: (1) aggregate 10 cells both horizontally
 #' and vertically, producing cells of
-#' ~300m, and (2) further aggregate these newly aggregated cells by a factor of
+#' ~300m, and (2) further group these newly aggregated cells by a factor of
 #' 10, creating larger cells with a resolution of ~3000m. For instance, setting
 #' `aggregation = c(5, 10)` will first aggregate to ~150m cells (30 * 5), then
-#' aggregate these new cells into ~1500m cells (150 * 10).
+#' group these new cells into ~1500m cells (150 * 10).
 #'
 #' Frontiers are defined as cells that meet two criteria: (1) they have a minimum
 #' percentage of forest cover (`min_cover`) and (2) they have a minimum average
 #' annual forest loss rate in a given temporal window (`min_rate`). By default, these
-#' values take 5% and 0.5%, respectively (Buchadas et al. 2022), but they could
+#' values take 5% and 0.5%, respectively (as in Buchadas et al. 2022), but they could
 #' take other values. Those cells
 #' that do not meet these criteria are not considered frontiers and thus excluded from the analysis. Also, by default
-#' the temporal window is set to five years, but it could also be set to a different
+#' the temporal window is set to 5 years (`window`), but it could also be set to a different
 #' number of years (e.g. 2, 3, 7 or 9 years).
 #'
 #' @return

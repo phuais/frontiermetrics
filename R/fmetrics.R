@@ -80,8 +80,8 @@ get_archetypes <- function(out){
 
 #' Calculates frontier metrics
 #'
-#' Given a structured dataset of class 'init_FrontierMetric', generated with [init_fmetrics()],
-#' calculates different deforestation frontier metrics.
+#' Given a structured object of class 'init_FrontierMetric' generated with [init_fmetrics()],
+#' calculates a set of deforestation frontier metrics.
 #'
 #' @param x An object of class 'init_FrontierMetric' generated with [init_fmetrics()].
 #' @param metrics Frontier metrics to be calculated. Options are: "baseline",
@@ -89,7 +89,7 @@ get_archetypes <- function(out){
 #' "all" (default) to calculate all available frontier metrics. User-defined metrics
 #' can also be calculated. See Details.
 #' @param params List of parameters related to the levels of activeness of a
-#' frontier and the minimum years to consider frontier onset. See Details.
+#' frontier and the minimum years to consider for the 'onset' metric. See Details.
 #' @param breaks An object of class 'FrontierMetric_breaks' generated with [breaks_rules()], containing the rules
 #' to define discrete classes for individual frontier metrics. See Details.
 #' @param dir A path to a directory to export raster layers of frontier metrics. If `NULL`,
@@ -97,7 +97,7 @@ get_archetypes <- function(out){
 #' @param gdal GDAL driver specific datasource creation options. See ?terra::writeRaster for details.
 #' @param overwrite Logical. If `TRUE` (default), raster layers files will be overwritten.
 #' @param export_archetypes Logical. If `TRUE` and a path is provided in `dir`,
-#' raster layer of archetypes will be exported. Default is `FALSE`.
+#' raster layer of archetypes will also be exported. Default is `FALSE`.
 #' @param ncores Numbers of cores to parallelize processes. Default is 1. See Details.
 #' @param silent Logical. If `TRUE`, suppresses messages. Default is `FALSE`.
 #'
@@ -120,9 +120,9 @@ get_archetypes <- function(out){
 #' By default, `params = list(activeness_levels = NULL, onset_min_years = 3)`.  The level
 #' of frontier activeness will depend on the time-windows where the frontier
 #' was active along the time-frame. Time-windows can be visualized, before calculating frontiers,
-#' by inspecting the slot `@temporal_windows` of an object of class 'init_FrontierMetric' generated
+#' by inspecting the slot `@temporal_windows` of the object of class 'init_FrontierMetric' generated
 #' with `init_fmetrics()` and provided in argument `x` of `fmetrics()`. For instance,
-#' if we consider a time-frame of 2000-2024 and a temporal window of 5 years, the
+#' if we consider the time-frame 2000-2024 and a window of 5 years, the
 #' temporal windows for this time-frame will be:
 #'
 #' | window &nbsp;&nbsp;&nbsp; | first_year &nbsp;&nbsp;&nbsp; | last_year &nbsp;&nbsp;&nbsp; |
@@ -148,29 +148,29 @@ get_archetypes <- function(out){
 #' | 19 | 2019 | 2023 |
 #' | 20 | 2020 | 2024 |
 #'
-#' If `activeness_levels = NULL`, frontier activeness will be classified in "emerging" (active
+#' If `activeness_levels = NULL`, frontier activeness will be classified as "emerging" (active
 #' during temporal window 20), "active" (active during temporal windows 16 to 19) or
 #' "old" (active during temporal windows 1 to 15). These categories can be changed. For instance,
 #' if `activeness_levels = list(emerging = 19:20, old = 15:18, very_old = 1:14)`, three levels of
 #' activeness will be considered, according to the provided temporal windows for each one.
 #' All temporal windows must be considered in the defined activeness levels.
 #'
-#' If `onset_min_years = 3` (default), onset will refer to the year of onset of the deforestation frontier, calculated as the
-#' first year with at least 3 years of consecutive forest loss. The user can change this
-#' parameter to a smaller or bigger minimum number of years.
+#' If `onset_min_years = 3` (default), onset will refer to the first year of the time series
+#' that exhibited forest loss in a number of 3 consecutive years. The user can change this
+#' parameter to a lower or higher minimum number of years.
 #'
 #' For advanced R users, user-defined metrics can also be calculated. The user must
 #' create an R function (named "ud_" + "metric_name"; e.g. "ud_metric1") that would receive a unique argument `x`, an object of class
 #' `init_FrontierMetric` generated with `init_fmetrics()`, work with the structured
-#' dataset within this object (in slot `@data`) as desired, and return a data.frame
-#' with the values of the metric for each individual cell. See vignettes for details
-#' and examples.
+#' dataset within this object as desired (available in slot `@data`), and return a data.frame
+#' with the values of the metric for each individual cell. See the vignette for details and
+#' an example.
 #'
-#' In argument `breaks`, the user can set the rules to generate discrete
+#' In argument `breaks`, the user can define the rules to generate discrete
 #' classes of those continuous metrics, by providing an object of
 #' class 'FrontierMetric_breaks' generated with [breaks_rules()]. Run `breaks_rules()` to
 #' explore these rules. By default, continuous metrics
-#' are divided in discrete classes by the "Jenks natural
+#' are divided in discrete classes by using the "Jenks natural
 #' breaks classification", using the function `BAMMtools::getJenksBreaks`.
 #' See ?breaks_rules to explore how to re-define categories.
 #'
@@ -181,18 +181,18 @@ get_archetypes <- function(out){
 #' the outputted object.
 #'
 #' If a path is provided in `dir` (default is `NULL`), raster layers of frontier metrics will be
-#' exported as .tif files. Use `dir = ""` to export files to current  directory.
+#' exported as .tif files. Use `dir = ""` to export files to current directory.
 #' GDAL options can be defined in argument `gdal`. See ?terra::writeRaster for details.
 #'
 #' Parallelization is recommended for very large datasets (ncores > 1).
-#' The calculation of the fragmentation metrics is the most computationally intensive.
+#' The calculation of the the metric "loss_frag" is the most computationally intensive.
 #' In general, it is advisable to first run the function with `ncores = 1` and see if it is feasible.
 #' If needed, increase the number of cores. The calculation of this particular metric with
-#' parallelization requires the `snowfall` package.
+#' parallelization requires the `snowfall` package to be installed.
 #'
 #' @return An object of class 'FrontierMetric', containing a dataset with the calculated frontier metrics
 #' for each individual cell. This object can be passed to [fmetrics_summary()],
-#' [fmetrics_plot()], and [fmetrics_rast()]. Raster
+#' [fmetrics_plot()], and [fmetrics_rast()].
 #'
 #' @seealso [init_fmetrics()], [fmetrics_summary()], [fmetrics_plot()], and [fmetrics_rast()]
 #'

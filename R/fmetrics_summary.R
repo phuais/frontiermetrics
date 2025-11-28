@@ -1,15 +1,15 @@
 #' Calculates summary statistics of frontier metrics
 #'
 #' Calculates basic statistics of continuous values of frontier metrics, plots
-#' histograms, and calculates the total area of each class within each frontier metric.
+#' histograms, and calculates the total area of each discrete class of each frontier metric.
 #'
 #' @param x Object of class 'FrontierMetric' generated with [fmetrics()].
-#' @param metrics Frontier metrics to be plotted. Options include those calculated
+#' @param metrics Frontier metrics to consider. Options include those calculated
 #' frontier metrics (including user-defined metrics) or "all" to calculate all frontier
 #' metrics available within `x`. Default is "all".
 #'
 #' @details
-#' User-defined metrics can not be passed to this function.
+#' User-defined metrics will not be considered.
 #'
 #' @return A list with three elements:
 #' (1) a data frame with basic summary statistics;

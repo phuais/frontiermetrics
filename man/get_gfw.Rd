@@ -41,7 +41,7 @@ extent of a provided study area, and exports raster layers of tree cover and for
 \details{
 The downloaded tiles include: (1) a raster layer of tree cover for the year 2000,
 and (2) raster layer of forest loss for subsequent years up to 2024.
-Tiles of the same type (tree cover or forest loss) are merged and cropped to the
+Tiles of the same variable (tree cover or forest loss) are merged and cropped to the
 study area extent specified in \code{study_area}. If \code{mask = TRUE}, the tiles will be masked to
 the provided extent or polygon.
 }

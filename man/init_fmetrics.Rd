@@ -103,6 +103,16 @@ represent the first and last year of the time-series. The number of years
 provided by this range must match the number of layers of the cover time-series
 provided in \code{raster}.
 
+\emph{
+Note that available metrics were initially programmed to work with Global Forest Watch
+datasets, and excluding the process of forest gain. This could be relevant for the
+calculation of some of these metrics, if a custom time-series of forest cover is
+provided, and the process of forest gain is considered within this time-series. In
+addition, these metrics where initially thought for the process of forest loss in
+tropical and subtropiccal regions. Any other use for a different cover or region
+should be applied with caution, and these metrics might need particular adjustments.
+}
+
 Forest cover and forest loss data can be aggregated, which is recommended.
 Aggregation is done in two steps. First, cells are aggregated using the first
 value of the aggregation argument, which represents the number of cells to merge

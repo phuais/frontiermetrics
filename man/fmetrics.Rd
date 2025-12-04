@@ -13,8 +13,7 @@ fmetrics(
   gdal = NULL,
   overwrite = TRUE,
   export_archetypes = FALSE,
-  ncores = 1,
-  silent = FALSE
+  ncores = 1
 )
 }
 \arguments{
@@ -42,8 +41,6 @@ to define discrete classes for individual frontier metrics. See Details.}
 raster layer of archetypes will also be exported. Default is \code{FALSE}.}
 
 \item{ncores}{Numbers of cores to parallelize processes. Default is 1. See Details.}
-
-\item{silent}{Logical. If \code{TRUE}, suppresses messages. Default is \code{FALSE}.}
 }
 \value{
 An object of class 'FrontierMetric', containing a dataset with the calculated frontier metrics

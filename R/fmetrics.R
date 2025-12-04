@@ -99,7 +99,6 @@ get_archetypes <- function(out){
 #' @param export_archetypes Logical. If `TRUE` and a path is provided in `dir`,
 #' raster layer of archetypes will also be exported. Default is `FALSE`.
 #' @param ncores Numbers of cores to parallelize processes. Default is 1. See Details.
-#' @param silent Logical. If `TRUE`, suppresses messages. Default is `FALSE`.
 #'
 #' @details
 #' The `metrics` argument specifies which frontier metrics will be calculated. These metrics are computed for each cell and are defined as follows:
@@ -235,8 +234,7 @@ fmetrics <- function(x,
                      gdal = NULL,
                      overwrite = TRUE,
                      export_archetypes = FALSE,
-                     ncores = 1,
-                     silent = FALSE){
+                     ncores = 1){
 
   # Argument's checking
   environment(check_fmetrics) <- environment()
@@ -305,8 +303,6 @@ fmetrics <- function(x,
   fm_order <- c("baseline", "baseline_frag", "activeness", "speed",
                 "loss", "left", "loss_frag", "onset")
   metrics <- fm_order[fm_order %in% metrics]
-
-  if(!silent) message("Calculating metrics")
 
   if("baseline" %in% metrics){
     foo <- calc_fm_baseline(x, breaks@baseline)

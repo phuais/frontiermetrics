@@ -217,13 +217,6 @@ check_fmetrics <- function(){
     what     <- append(what, 2)
   }
 
-  # silent
-  if(!is.logical(silent)){
-    messages <- append(messages, paste("- argument 'silent' must be logical. Default was taken (FALSE)"))
-    what     <- append(what, 1)
-    silent   <- FALSE
-  }
-
   warnings <- messages[which(what == 1)]
   errors   <- messages[which(what == 2)]
 

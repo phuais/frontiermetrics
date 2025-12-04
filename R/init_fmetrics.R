@@ -94,6 +94,16 @@ get_FL <- function(i, rast_loss, cell_size, aggregation, years, ncores, is_serie
 #' provided by this range must match the number of layers of the cover time-series
 #' provided in `raster`.
 #'
+#' \emph{
+#' Note that available metrics were initially programmed to work with Global Forest Watch
+#' datasets, and excluding the process of forest gain. This could be relevant for the
+#' calculation of some of these metrics, if a custom time-series of forest cover is
+#' provided, and the process of forest gain is considered within this time-series. In
+#' addition, these metrics where initially thought for the process of forest loss in
+#' tropical and subtropiccal regions. Any other use for a different cover or region
+#' should be applied with caution, and these metrics might need particular adjustments.
+#' }
+#'
 #' Forest cover and forest loss data can be aggregated, which is recommended.
 #' Aggregation is done in two steps. First, cells are aggregated using the first
 #' value of the aggregation argument, which represents the number of cells to merge
@@ -371,8 +381,7 @@ init_fmetrics <- function(raster,
                           params = list(activeness_levels = list(included = T_ranges$window),
                                         onset_min_years = 3),
                           breaks = foo_classes,
-                          ncores = ncores,
-                          silent = T)@data
+                          ncores = ncores)@data
   foo_metrics_inc <- foo_metrics[foo_metrics$baseline.c == "included" &
                                    foo_metrics$activeness != "excluded", ]
   frontier_ids <- foo_metrics_inc$id_cell

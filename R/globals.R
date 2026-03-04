@@ -10,4 +10,5 @@ utils::globalVariables(c("na.omit", ".SD", "id_cell", "terra", "landscapemetrics
                          "approach", "capture.output", "cover_series", "init_cover", "loss_series", "overwrite",
                          "raster", "is_series", "baseline_frag", "loss_frag", "breaks", "what",
                          "archetypes", "arch_colors", "study_area",
-                         "..metric", "..fm_classes", ":=", "arch_code", "filenames", "export", "links"))
+                         "..metric", "..fm_classes", ":=", "arch_code", "filenames", "export", "links", ".data",
+                         "setTxtProgressBar", "stats", "tag", "txtProgressBar"))

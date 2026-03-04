@@ -55,6 +55,8 @@ frontier activeness. Default is 5. See Details.}
 
 \item{ncores}{Numbers of cores to parallelize processes. Default is 1.}
 
+\item{tag}{Tag/name for the object, such as the study area, for future identification.}
+
 \item{export}{If \code{NULL} (default), the object will not be exported. Otherwise, a string with the path name of the file where the object will be saved.}
 
 \item{silent}{Logical. If \code{TRUE}, suppresses messages. Default is \code{FALSE}.}

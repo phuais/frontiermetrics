@@ -54,6 +54,7 @@ get_FL <- function(i, rast_loss, cell_size, aggregation, years, ncores, is_serie
 #' @param window A whole number depicting the number of years to consider in the calculation of
 #' frontier activeness. Default is 5. See Details.
 #' @param ncores Numbers of cores to parallelize processes. Default is 1.
+#' @param tag Tag/name for the object, such as the study area, for future identification.
 #' @param export If `NULL` (default), the object will not be exported. Otherwise, a string with the path name of the file where the object will be saved.
 #' @param silent Logical. If `TRUE`, suppresses messages. Default is `FALSE`.
 #'

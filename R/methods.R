@@ -15,6 +15,12 @@ methods::setMethod(f = "show", signature = "init_FrontierMetric",
                    definition =
                      function(object){
                        cat("Class               : init_FrontierMetric\n")
+                       if(object@tag == ""){
+                         cat("Tag                 : -\n")
+                       } else {
+                         cat("Tag                 : ", object@tag, "\n", sep = "")
+                       }
+                       cat("Extent              : ", paste0(round(object@extent, digits = 3), sep = " "), "\n", sep = "")
                        cat("Time-frame          : ", object@time_frame[1], " - ", object@time_frame[2], "\n", sep = "")
                        if(round(object@grain[[1]][1], digits = 10) == round(object@grain[[1]][2], digits = 10)){
                          met <- round(object@grain[[1]][1]*111120.0000012, digits = 1)
@@ -52,17 +58,64 @@ methods::setMethod(f = "show", signature = "FrontierMetric",
                    definition =
                      function(object){
                        cat("Class               : FrontierMetric\n")
-                       if(length(object@metrics) > 0){
-                         cat("Metrics             :", object@metrics, "\n")
+                       if(object@tag == ""){
+                         cat("Tag                 : -\n")
                        } else {
-                         cat("Metrics             : -\n")
+                         cat("Tag                 : ", object@tag, "\n", sep = "")
                        }
-                       if(length(object@ud_metrics) > 0){
-                         cat("User-defined metrics:", object@ud_metrics, "\n")
-                       } else {
-                         cat("User-defined metrics: -\n")
-                       }
+                       cat("Extent              : ", paste0(round(object@extent, digits = 3), sep = " "), "\n", sep = "")
                        cat("Time-frame          : ", object@time_frame[1], " - ", object@time_frame[2], "\n", sep = "")
+                       cat("Metrics             : ")
+                       #if(length(object@metrics) == 1 && object@metrics == "activeness")
+                       if(length(object@metrics) > 0){
+                         if(length(object@metrics) == 1 & object@metrics[1] == "activeness"){
+                           cat("activeness")
+                         } else {
+                           formatted_df <- round(object@summary@summary_stats, 2)
+                           nms <- colnames(formatted_df)
+                           max_metric_width <- max(nchar(nms))
+                           value_strings <- sapply(seq_along(nms), function(i) {
+                             if (nms[i] == "onset") {
+                               paste(formatted_df[[i]][c(1, 2, 4)], collapse = ", ")
+                             } else {
+                               paste(formatted_df[[i]][1:3], collapse = ", ")
+                             }
+                           })
+                           max_value_width <- max(nchar(value_strings))
+                           indent <- paste(rep(" ", nchar("Metrics             : ")), collapse = "")
+                           lines <- sapply(seq_along(nms), function(i) {
+                             metric <- nms[i]
+                             stats <- if (metric == "onset") {
+                               "(min, max, mode)"
+                             } else {
+                               "(min, max, mean)"
+                             }
+                             line_prefix <- if (i == 1) "" else indent
+                             sprintf("%s%-*s: %-*s %s",
+                                     line_prefix,
+                                     max_metric_width,
+                                     metric,
+                                     max_value_width,
+                                     value_strings[i],
+                                     stats)
+                           })
+                           cat(paste(lines, collapse = "\n"))
+                           if("activeness" %in% object@metrics){
+                             if(length(object@metrics) > 1) cat("\n")
+                             cat(paste(sprintf("%s%-*s",
+                                               indent,
+                                               max_metric_width,
+                                               "activeness"), collapse = "\n"))
+                           }
+                         }
+                       } else {
+                         cat("-")
+                       }
+                       if(object@ud_metrics[1] != ""){
+                         cat("\nUser-defined metrics:", object@ud_metrics, "\n")
+                       } else {
+                         cat("\nUser-defined metrics: -\n")
+                       }
                      }
 )
 
@@ -130,18 +183,20 @@ methods::setMethod(f = "show", signature = "FrontierMetric_summary",
                                                label2 = c("Baseline forest", "Baseline fragmentation", "Forest loss",
                                                           "Forest loss fragmentation", "Speed",
                                                           "Forest left", "Activeness", "Onset"))
-                       cat("- Summary statistics (absolute values)\n\n")
-                       formatted_df <- round(object@summary_stats, digits = 2)
-                       dd_labels2 <- dd_labels[sapply(colnames(formatted_df),
-                                                      function(x) which(x == dd_labels$metric)), ]
-                       colnames(formatted_df) <- dd_labels2$label
-                       chars <- max(sapply(colnames(formatted_df), nchar))
-                       for(i in 1:ncol(formatted_df)){
-                         formatted_df[[i]] <- format(formatted_df[[i]],
-                                                     width = chars,
-                                                     justify = "right")
+                       if(nrow(object@summary_stats) > 0){
+                         cat("- Summary statistics (absolute values)\n\n")
+                         formatted_df <- round(object@summary_stats, digits = 2)
+                         dd_labels2 <- dd_labels[sapply(colnames(formatted_df),
+                                                        function(x) which(x == dd_labels$metric)), ]
+                         colnames(formatted_df) <- dd_labels2$label
+                         chars <- max(sapply(colnames(formatted_df), nchar))
+                         for(i in 1:ncol(formatted_df)){
+                           formatted_df[[i]] <- format(formatted_df[[i]],
+                                                       width = chars,
+                                                       justify = "right")
+                         }
+                         print(formatted_df)
                        }
-                       print(formatted_df)
                        cat("\n- Total area (km\u00b2) per metric class\n\n")
                        metrics <- unique(object@classes_areas$metric)
                        chars <- max(sapply(as.character(object@classes_areas$class), nchar))
@@ -151,7 +206,6 @@ methods::setMethod(f = "show", signature = "FrontierMetric_summary",
                          foo <- object@classes_areas[object@classes_areas$metric == metrics[i], 2:3]
                          print_fdf(foo, chars)
                        }
-                       print(object@hists)
                      }
 )
 

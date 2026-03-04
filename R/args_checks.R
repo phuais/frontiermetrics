@@ -24,25 +24,25 @@ check_get_gfw <- function(){
     what     <- append(what, 2)
   }
 
-  # dir
-  if(!is(dir, "character")){
+  # filenames
+  if(!is(filenames, "character") || length(filenames) != 2){
     messages <- append(messages,
-                       "- argument 'dir' must be a path to a directory.")
+                       "- argument 'filenames' must be a character vector of two elements.")
     what     <- append(what, 2)
-  } else {
-    if(dir != ""){
+  }
+
+  # dir
+  if(!is.null(dir)){
+    if(!is(dir, "character")){
+      messages <- append(messages,
+                         "- argument 'dir' must be a path to a directory.")
+      what     <- append(what, 2)
+    } else {
       if(!dir.exists(dir)){
         messages <- append(messages, paste("- the provided directory does not exist: ", dir, "."))
         what     <- append(what, 2)
       }
     }
-  }
-
-  # timeout
-  if(!is(timeout, "numeric") || !timeout > 0){
-    messages <- append(messages, paste("- argument 'timeout' must be a positive number (seconds). Default 600 was taken."))
-    what     <- append(what, 1)
-    timeout  <- 600
   }
 
   # overwrite
@@ -55,8 +55,7 @@ check_get_gfw <- function(){
   errors   <- messages[which(what == 2)]
 
   out <- list(warnings = warnings,
-              errors = errors,
-              timeout = timeout)
+              errors = errors)
   return(out)
 }
 
@@ -164,6 +163,20 @@ check_init_fmetrics <- function(){
   if(!is.numeric(ncores)){
     messages <- append(messages, paste("- argument 'ncores' must be a number that specifies the number of cores to use to parallelize processes."))
     what     <- append(what, 2)
+  }
+
+  # tag
+  if(!is.character(tag)){
+    messages <- append(messages, paste("- if not NULL, argument 'tag' must be a string with the name assigned to the project or study area, to facilitate future identification."))
+    what     <- append(what, 2)
+  }
+
+  # export
+  if(!is.null(export)){
+    if(!is.character(export)){
+      messages <- append(messages, paste("- argument 'export' must be a path name of the file were the object will be saved."))
+      what     <- append(what, 2)
+    }
   }
 
   warnings <- messages[which(what == 1)]

@@ -5,18 +5,29 @@
 \alias{init_FrontierMetric-class}
 \title{Class 'init_FrontierMetric'}
 \description{
-Objects of class 'init_FrontierMetric' are generated with \code{\link[=init_fmetrics]{init_fmetrics()}}, and hold
+Objects of class 'init_FrontierMetric' are generated with \code{\link[=init_fmetrics]{init_fmetrics()}} and hold
 the necessary structures to calculate frontier metrics with \code{\link[=fmetrics]{fmetrics()}}. The main
-object is under \verb{@data}, which is a data frame containing -among other relevant data- the amount of forest
+object is contained under \verb{@data}, which is a data frame containing -among other relevant data- the amount of forest
 cover in the first year of the time series, and the amount of forest loss
 in each year of the time series, for each individual cell of the study area.
+}
+\details{
+The slot \verb{@data} contains the primary dataset used for the calculation of metrics. The most relevant columns are:
+\itemize{
+\item id_cell: identifier of each cell at the spatial level where frontiers are delineated.
+\item x_cell, y_cell: central coordinates of each frontier cell.
+\item id_1: identifier of each individual (finer-resolution) cell nested within a frontier cell.
+\item x_1, y_1: central coordinates of each finer-resolution cell.
+\item FC_+year_0: forest cover (km²) in each finer-resolution cell for the baseline year of the time frame.
+\item FL_+year_1, FL_+year_2, ..., FL_+year_n: forest loss (km²) in each finer-resolution cell for each consecutive year within the defined time frame.
+}
 }
 \section{Slots}{
 
 \describe{
 \item{\code{data}}{Main dataset containing data about forest cover and forest loss.}
 
-\item{\code{coords}}{Central coordinates of bigger cells.}
+\item{\code{coords}}{Central coordinates of frontier cells.}
 
 \item{\code{time_frame}}{Year range of the studied time series.}
 
@@ -32,7 +43,7 @@ in each year of the time series, for each individual cell of the study area.
 
 \item{\code{is_series}}{Logical. Whether the dataset was generated with direct databases from Global Forest Watch (FALSE) or from a cover time-series (TRUE).}
 
-\item{\code{min_treecover}}{Pre-defined minimum tree cover during running of \code{\link[=init_fmetrics]{init_fmetrics()}}.}
+\item{\code{min_treecover}}{Pre-defined minimum tree canopy cover during running of \code{\link[=init_fmetrics]{init_fmetrics()}}.}
 
 \item{\code{min_cover}}{Pre-defined minimum forest cover during running of \code{\link[=init_fmetrics]{init_fmetrics()}}.}
 
@@ -40,8 +51,10 @@ in each year of the time series, for each individual cell of the study area.
 
 \item{\code{window}}{Pre-defined window of years to calculate \code{min_rate} during running of \code{\link[=init_fmetrics]{init_fmetrics()}}.}
 
-\item{\code{temporal_windows}}{Pre-defined temporal windows, relevant for metric of activeness.}
+\item{\code{temporal_windows}}{Generated temporal windows, relevant for metric of activeness.}
 
-\item{\code{excluded_cells}}{Cells excluded for future analysis (not frontiers)}
+\item{\code{excluded_cells}}{Excluded cells for future analysis (not frontiers).}
+
+\item{\code{tag}}{Assigned tag/name for the object (e.g. study area or project name) for future identification.}
 }}
 

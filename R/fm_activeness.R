@@ -43,25 +43,13 @@ calc_fm_activeness <- function(x, classes_sub){
     act
   }
 
-  act_outs <- unlist(sapply(1:nrow(fm_ds), ff_act))
-  fm_ds$activeness <- act_outs
-  fm_ds$activeness <- factor(fm_ds$activeness, levels = c(names(classes_sub), "excluded"))
+  fm_ds$activeness <- unlist(sapply(1:nrow(fm_ds), ff_act))
+  #fm_ds$activeness <- factor(fm_ds$activeness, levels = c(names(classes_sub), "excluded"))
+  fm_ds$activeness <- factor(fm_ds$activeness)
   fm_ds <- fm_ds[, c("id_cell", "activeness")]
 
-  out <- new("FrontierMetric",
-             metrics = "activeness",
-             ud_metrics = "",
-             time_frame = x@time_frame,
-             data = as.data.table(fm_ds),
-             extent = x@extent,
-             grain = x@grain,
-             aggregation = x@aggregation,
-             min_treecover = x@min_treecover,
-             min_cover = x@min_cover,
-             min_rate = x@min_rate,
-             window = x@window,
-             archetypes = data.frame(),
-             excluded_cells = x@excluded_cells)
+  out <- list(metrics = "activeness",
+              data = as.data.table(fm_ds))
 
   return(out)
 }

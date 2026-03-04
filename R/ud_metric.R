@@ -1,18 +1,8 @@
 ud_metric <- function(x, fm_ds, name){
-  out <- new("FrontierMetric",
-             metrics = "",
-             ud_metrics = name,
-             time_frame = x@time_frame,
-             data = as.data.table(fm_ds),
-             extent = x@extent,
-             grain = x@grain,
-             aggregation = x@aggregation,
-             min_treecover = x@min_treecover,
-             min_cover = x@min_cover,
-             min_rate = x@min_rate,
-             window = x@window,
-             archetypes = data.frame(),
-             excluded_cells = x@excluded_cells)
+
+  out <- list(metrics = "",
+              ud_metrics = name,
+              data = as.data.table(fm_ds))
 
   return(out)
 }

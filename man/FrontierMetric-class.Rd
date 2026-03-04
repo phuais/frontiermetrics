@@ -5,7 +5,7 @@
 \alias{FrontierMetric-class}
 \title{Class 'FrontierMetric'}
 \description{
-Objects of class 'FrontierMetric' are generated with \code{\link[=fmetrics]{fmetrics()}}, and hold
+Objects of class 'FrontierMetric' are generated with \code{\link[=fmetrics]{fmetrics()}} and hold
 the values of the calculated frontier metrics for each cell of the study area.
 Objects of this class can be passed to \code{\link[=fmetrics_plot]{fmetrics_plot()}}, \code{\link[=fmetrics_summary]{fmetrics_summary()}}, and \code{\link[=fmetrics_rast]{fmetrics_rast()}}.
 }
@@ -38,5 +38,9 @@ metrics for each individual cell of the study area.}
 \item{\code{archetypes}}{Data frame containing the calculated archetypes for each cell of the study area.}
 
 \item{\code{excluded_cells}}{Cells excluded for future analysis (not frontiers)}
+
+\item{\code{summary}}{Summary statistics of metrics.}
+
+\item{\code{tag}}{Assigned name for the object (e.g. study area or project name)}
 }}
 

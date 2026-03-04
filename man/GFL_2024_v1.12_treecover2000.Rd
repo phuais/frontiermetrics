@@ -3,7 +3,7 @@
 \docType{data}
 \name{GFL_2024_v1.12_treecover2000}
 \alias{GFL_2024_v1.12_treecover2000}
-\title{Data frame containing the links to each tile of tree cover from Global Forest Watch (Hansen et al. 2013).
+\title{Data frame containing the links to each tile of tree canopy cover for year 2000 from Global Forest Watch datasets (Hansen et al. 2013).
 It is intended to be used for internal functions of the package.}
 \format{
 An object of class \code{data.frame} with 504 rows and 5 columns.
@@ -12,7 +12,7 @@ An object of class \code{data.frame} with 504 rows and 5 columns.
 GFL_2024_v1.12_treecover2000
 }
 \description{
-Data frame containing the links to each tile of tree cover from Global Forest Watch (Hansen et al. 2013).
+Data frame containing the links to each tile of tree canopy cover for year 2000 from Global Forest Watch datasets (Hansen et al. 2013).
 It is intended to be used for internal functions of the package.
 }
 \references{

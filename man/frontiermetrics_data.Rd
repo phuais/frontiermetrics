@@ -3,14 +3,14 @@
 \docType{data}
 \name{frontiermetrics_data}
 \alias{frontiermetrics_data}
-\title{URLs to download data for example use.}
+\title{URLs to download data to run examples.}
 \format{
-An object of class \code{character} of length 5.
+An object of class \code{character} of length 6.
 }
 \usage{
 frontiermetrics_data
 }
 \description{
-URLs to download data for example use.
+URLs to download data to run examples.
 }
 \keyword{datasets}

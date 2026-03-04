@@ -2,7 +2,7 @@
 % Please edit documentation in R/breaks_rules.R
 \name{breaks_rules}
 \alias{breaks_rules}
-\title{Defines the rules to categorize frontier metrics}
+\title{Defines the rules to categorize continuous frontier metrics}
 \usage{
 breaks_rules(
   baseline = list("jenks", c("Low", "Medium", "High")),
@@ -21,11 +21,11 @@ rules for the discrete classes of continuous frontier metrics. See Details.}
 An object of class 'FronterMetric_classes' to be used in argument \code{breaks} in \code{\link[=fmetrics]{fmetrics()}}.
 }
 \description{
-For those continuous frontier metrics, defines rules to generate discrete classes.
+Defines the rules to categorize continuous frontier metrics
 }
 \details{
 For each continuous metric, the user must provide a list. The first element of the list
-defines the algorithm to be used for the categorization. The second element of  the list must be a character vector with the names
+defines the algorithm to be used for the categorization. The second element of the list must be a character vector with the names
 for each class that will be generated.
 
 The following algorithms are available (first element of the list):
@@ -49,7 +49,7 @@ of the list) \code{c("Low", "Medium", "High")}, where "Low": 5-10, "Medium": 10-
 "High": 55-Inf.
 
 When assigned to an object, the new definition of classes can be passed to \code{\link[=fmetrics]{fmetrics()}},
-inside the argument \code{breaks}, to generate frontier metrics's classes with a new definition.
+inside the argument \code{breaks}, to generate frontier metric classes with a new definition.
 }
 \examples{
 # Explore default rules

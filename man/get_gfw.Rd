@@ -6,11 +6,12 @@
 \usage{
 get_gfw(
   study_area,
-  dir = "",
+  dir = NULL,
   mask = TRUE,
-  overwrite = FALSE,
-  timeout = 600,
-  silent = FALSE
+  filenames = c("tree_cover", "loss_year"),
+  overwrite = TRUE,
+  silent = FALSE,
+  ...
 )
 }
 \arguments{
@@ -21,29 +22,37 @@ study area; or (3) a file path to a spatial object.}
 \item{dir}{Path to the directory where the processed raster layers will be saved. Default is current
 directory.}
 
-\item{mask}{Logical. If TRUE (default) downloaded tiles will be masked according to the
+\item{mask}{Logical. If \code{TRUE} (default) downloaded tiles will be masked according to the
 boundaries of the provided extent or polygon in \code{study_area}. Otherwise, the whole tiles will be kept.}
+
+\item{filenames}{Character vector of length 2, indicating the name for the outputs of tree cover
+and loss (raster layers). Default is \code{c("tree_cover", "loss_year")}.}
 
 \item{overwrite}{Logical. If \code{TRUE}, files will be overwritten.}
 
-\item{timeout}{Maximum time (in seconds) invested in downloading the tiles. Default is 600.}
-
 \item{silent}{Logical. If \code{TRUE}, suppresses messages. Default is \code{FALSE}.}
+
+\item{...}{Other arguments passed to \code{curl::multi_download}.}
 }
 \value{
-Exports cropped and/or masked raster layers from GFW databases, one for tree cover
-and another for forest loss, based on the provided study area.
+Processed raster layers from GFW databases, one for tree canopu cover
+and another for forest cover loss per year, based on the provided study area.
 }
 \description{
-Downloads all overlapping tiles from Global Forest Watch database 2024-v1.12 (Hansen et al. 2013), based on the
-extent of a provided study area, and exports raster layers of tree cover and forest loss.
+Based on the extent or polygon of a provided study area, downloads overlapping tiles from Global Forest Watch database
+2024-v1.12 (Hansen et al. 2013), including tree canopy cover in year 2000 and forest cover loss per year until 2024,
+and exports processed raster layers.
 }
 \details{
-The downloaded tiles include: (1) a raster layer of tree cover for the year 2000,
-and (2) raster layer of forest loss for subsequent years up to 2024.
-Tiles of the same variable (tree cover or forest loss) are merged and cropped to the
+The function uses \code{curl::multi_download} to download multiple files (tiles) concurrently.
+The downloaded tiles include:
+(1) a raster layer of tree canopy cover in year 2000;
+(2) a raster layer of forest cover loss for subsequent years up to 2024. The loss layer is
+encoded as 0 (no loss) or as integer values (1, 2, ..., 24) corresponding to loss detected primarily in years 2001, 2001, ..., 2024.
+
+Tiles of the same variable (tree canopy cover or forest loss) are merged and cropped to the
 study area extent specified in \code{study_area}. If \code{mask = TRUE}, the tiles will be masked to
-the provided extent or polygon.
+the provided extent or boundaries of the polygon.
 }
 \examples{
 \dontrun{

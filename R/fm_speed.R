@@ -31,12 +31,12 @@ calc_fm_speed <- function(x, classes_sub){
   long_data_maxgrain_FL <- merge(long_data_maxgrain_FL, yeartexttonum[, 2:3])
   long_data_maxgrain_FL <- long_data_maxgrain_FL[, c("id_cell", "year_n", "FL"), with = F]
 
-  long_data_maxgrain_FL$zerocheck <- sum(long_data_maxgrain_FL$FL, na.rm = T)
-  long_data_maxgrain_FL <- long_data_maxgrain_FL[long_data_maxgrain_FL$zerocheck != 0, ]
+  # long_data_maxgrain_FL$zerocheck <- sum(long_data_maxgrain_FL$FL, na.rm = T)
+  # long_data_maxgrain_FL <- long_data_maxgrain_FL[long_data_maxgrain_FL$zerocheck != 0, ]
 
   # Loess fitting
   ts_cell <- long_data_maxgrain_FL[, list(data = list(.SD)), by = id_cell]
-  ts_cell$m <- lapply(ts_cell$data, FUN = loess, formula = FL ~ year_n, span = .3)
+  ts_cell$m <- suppressWarnings(lapply(ts_cell$data, FUN = loess, formula = FL ~ year_n, span = .3))
   ts_cell$fitted <- lapply(ts_cell$m, function(x) x$fitted)
   ts_cell$diff <- lapply(ts_cell$fitted, function(x) c(NA, diff(x)))
 
@@ -52,20 +52,8 @@ calc_fm_speed <- function(x, classes_sub){
   ts_cell$speed.c <- cut(ts_cell$speed, brks, labels = classes_sub[[2]])
   ts_cell$speed.c <- factor(ts_cell$speed.c, levels = rev(classes_sub[[2]]))
 
-  out <- new("FrontierMetric",
-             metrics = "speed",
-             ud_metrics = "",
-             time_frame = x@time_frame,
-             data = as.data.table(ts_cell),
-             extent = x@extent,
-             grain = x@grain,
-             aggregation = x@aggregation,
-             min_treecover = x@min_treecover,
-             min_cover = x@min_cover,
-             min_rate = x@min_rate,
-             window = x@window,
-             archetypes = data.frame(),
-             excluded_cells = x@excluded_cells)
+  out <- list(metrics = "speed",
+              data = as.data.table(ts_cell))
 
   return(out)
 }

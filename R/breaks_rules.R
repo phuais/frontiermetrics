@@ -1,13 +1,11 @@
-#' Defines the rules to categorize frontier metrics
-#'
-#' For those continuous frontier metrics, defines rules to generate discrete classes.
+#' Defines the rules to categorize continuous frontier metrics
 #'
 #' @param baseline,baseline_frag,loss,loss_frag,speed,left A list defining the
 #' rules for the discrete classes of continuous frontier metrics. See Details.
 #'
 #' @details
 #' For each continuous metric, the user must provide a list. The first element of the list
-#' defines the algorithm to be used for the categorization. The second element of  the list must be a character vector with the names
+#' defines the algorithm to be used for the categorization. The second element of the list must be a character vector with the names
 #' for each class that will be generated.
 #'
 #' The following algorithms are available (first element of the list):
@@ -31,7 +29,7 @@
 #' "High": 55-Inf.
 #'
 #' When assigned to an object, the new definition of classes can be passed to [fmetrics()],
-#' inside the argument `breaks`, to generate frontier metrics's classes with a new definition.
+#' inside the argument `breaks`, to generate frontier metric classes with a new definition.
 #'
 #' @return An object of class 'FronterMetric_classes' to be used in argument `breaks` in [fmetrics()].
 #' @export
@@ -61,17 +59,18 @@ breaks_rules <- function(baseline = list("jenks", c("Low", "Medium", "High")),
   # Argument's checking
   environment(check_breaks_rules) <- environment()
   chk <- check_breaks_rules()
-  if (length(chk[[1]]) > 0)
-    for (w in 1:length(chk[[1]])) {
+  if(length(chk[[1]]) > 0){
+    for(w in 1:length(chk[[1]])){
       warning(strwrap(chk[[1]], prefix = "\n", initial = ""), call. = FALSE)
     }
-  if (length(chk[[2]]) > 0) {
+  }
+  if(length(chk[[2]]) > 0){
     errors <- chk[[2]]
     stop(strwrap(errors, prefix = "\n", initial = "\n"))
   } else {
     if(length(chk) > 2){
       objs <- names(chk)
-      for (i in 3:length(chk)) {
+      for(i in 3:length(chk)){
         assign(objs[i], chk[[i]])
       }
     }

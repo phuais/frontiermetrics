@@ -84,13 +84,13 @@ fmetrics_rast <- function(x,
 
   if("all" %in% metrics){
     metrics <- x@metrics
-    if(length(x@ud_metrics) > 0){
+    if(x@ud_metrics[1] != ""){
       metrics <- c(metrics, x@ud_metrics)
     }
     metrics <- c(metrics, "archetypes")
   }
 
-  text <- "In raster layer \"is_frontier.tif\", values equal to 1 represent frontiers under user classification, whereas values equal to 0, cells that were not classified as frontiers.\n\nCode number's meaning of frontier metric's classes"
+  text <- "In raster layer \"is_frontier.tif\", values equal to 1 represent frontiers under user classification, whereas values equal to 0, cells that were not classified as frontiers.\n\nCode number's meaning of frontier metric's classes:"
 
   template <- x@excluded_cells[, c("x_cell", "y_cell")]
   template$foo <- -99

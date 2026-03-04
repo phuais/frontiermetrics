@@ -56,11 +56,20 @@ for the unnamed archetypes ("Other frontiers").}
 }
 \description{
 Generates maps of frontier metrics based on an object of class 'FrontierMetric'
-generated with \code{\link[=fmetrics]{fmetrics()}}
+generated with \code{\link[=fmetrics]{fmetrics()}}.
 }
 \details{
-Plots can depict the continuous values of metrics (\code{what = "values"}), the discrete
+Plots represent the continuous values of metrics (\code{what = "values"}), the discrete
 classes of metrics (\code{what = "classes"}), or both (\code{what = "both"}).
+
+When plotting the onset metric, NA values may occur in some study areas.
+These arise when cells are classified as frontiers by \code{\link[=init_fmetrics]{init_fmetrics()}},
+but no onset year can be assigned according to the metric definition.
+For example, a cell may qualify as a frontier because it exhibits an
+average forest loss rate of 0.5\% over a 5-year period, yet never
+experience three consecutive years of forest loss, which is required
+to define onset (by default). In such cases, the onset value is undefined (NA).
+NA values for this metric are displayed as white cells in the map.
 
 Archetypes can also be plotted. These can be defined as the combination
 of different frontier metric classes that might represent a higher order of

@@ -13,7 +13,9 @@ fmetrics(
   gdal = NULL,
   overwrite = TRUE,
   export_archetypes = FALSE,
-  ncores = 1
+  summary = TRUE,
+  ncores = 1,
+  silent = FALSE
 )
 }
 \arguments{
@@ -40,7 +42,12 @@ to define discrete classes for individual frontier metrics. See Details.}
 \item{export_archetypes}{Logical. If \code{TRUE} and a path is provided in \code{dir},
 raster layer of archetypes will also be exported. Default is \code{FALSE}.}
 
+\item{summary}{Logical. If \code{TRUE} (default), basic summary statistics will be
+computed. See Details.}
+
 \item{ncores}{Numbers of cores to parallelize processes. Default is 1. See Details.}
+
+\item{silent}{Logical. If \code{TRUE}, suppresses messages. Default is \code{FALSE}.}
 }
 \value{
 An object of class 'FrontierMetric', containing a dataset with the calculated frontier metrics
@@ -56,12 +63,12 @@ The \code{metrics} argument specifies which frontier metrics will be calculated.
 \itemize{
 \item baseline: The percentage of forest cover in each cell in the first year of the time-frame.
 \item baseline_frag: The value of edge density (m/ha) in the first year of the time-frame.
-\item loss: The percentage of total forest loss over the studied time-frame, relative to the baseline forest cover.
+\item loss: The cumulative forest loss over the study period, expressed in percentage points relative to forest cover in the baseline year.
 \item loss_frag: The maximum value of edge density (m/ha) per year of the forest loss spatial pattern, within the studied time-frame.
 \item speed: The maximum rate of forest loss (km²/year) during the studied time-frame.
 \item activeness: The level of activeness, as discrete categories, according to when the frontier was active
 during the period of analysis.
-\item left: The percentage of forest cover left after at the end of the studied time-series, relative to the
+\item left: The percentage of forest cover left at the end of the time-frame, relative to the total
 area of the cell.
 \item onset: The year of onset of the deforestation frontier, calculated as the
 first year with at least 3 years (by default) of consecutive forest loss.
@@ -69,8 +76,8 @@ first year with at least 3 years (by default) of consecutive forest loss.
 
 Key parameters of "activeness" and "onset" can be changed within the argument \code{params}.
 By default, \code{params = list(activeness_levels = NULL, onset_min_years = 3)}.  The level
-of frontier activeness will depend on the time-windows where the frontier
-was active along the time-frame. Time-windows can be visualized, before calculating frontiers,
+of frontier activeness will depend on the temporal windows where the frontier
+was active along the time-frame. Temporal windows can be visualized, before calculating frontiers,
 by inspecting the slot \verb{@temporal_windows} of the object of class 'init_FrontierMetric' generated
 with \code{init_fmetrics()} and provided in argument \code{x} of \code{fmetrics()}. For instance,
 if we consider the time-frame 2000-2024 and a window of 5 years, the
@@ -107,7 +114,7 @@ activeness will be considered, according to the provided temporal windows for ea
 All temporal windows must be considered in the defined activeness levels.
 
 If \code{onset_min_years = 3} (default), onset will refer to the first year of the time series
-that exhibited forest loss in a number of 3 consecutive years. The user can change this
+that exhibited forest loss during 3 consecutive years. The user can change this
 parameter to a lower or higher minimum number of years.
 
 \emph{
@@ -124,8 +131,8 @@ For advanced R users, user-defined metrics can also be calculated. The user must
 create an R function (named "ud_" + "metric_name"; e.g. "ud_metric1") that would receive a unique argument \code{x}, an object of class
 \code{init_FrontierMetric} generated with \code{init_fmetrics()}, work with the structured
 dataset within this object as desired (available in slot \verb{@data}), and return a data.frame
-with the values of the metric for each individual cell. See the vignette for details and
-an example.
+with the values of the metric for each individual cell. See the vignette for details examples on
+how this functions can be generated and used.
 
 In argument \code{breaks}, the user can define the rules to generate discrete
 classes of those continuous metrics, by providing an object of
@@ -145,15 +152,21 @@ If a path is provided in \code{dir} (default is \code{NULL}), raster layers of f
 exported as .tif files. Use \code{dir = ""} to export files to current directory.
 GDAL options can be defined in argument \code{gdal}. See ?terra::writeRaster for details.
 
+If \code{summary = TRUE}, a basic statistics summary is computed for the requested
+metrics. This includes basic statistics of continuous values of frontier metrics, frequency histograms, and the total area of
+each discrete class for each frontier metric. The summary can be accessed through
+\verb{@summary}. Histograms can be accessed and plotted through \verb{@summary@hists}.
+This summary can also be generated in a subsequent step using \code{\link[=fmetrics_summary]{fmetrics_summary()}}.
+User-defined metrics will not be considered for this summary.
+
 Parallelization is recommended for very large datasets (ncores > 1).
 The calculation of the the metric "loss_frag" is the most computationally intensive.
 In general, it is advisable to first run the function with \code{ncores = 1} and see if it is feasible.
-If needed, increase the number of cores. The calculation of this particular metric with
-parallelization requires the \code{snowfall} package to be installed.
+If needed, increase the number of cores. Parallelization uses packages \code{future} and \code{future.apply}.
 }
 \examples{
 # Downloads example of object of class 'init_FrontierMetric' generated with init_fmetrics()
-curl::curl_download(frontiermetrics_data[4], file.path(tempdir(), "copo_dataset.RDS"))
+curl::curl_download(frontiermetrics_data[5], file.path(tempdir(), "copo_dataset.RDS"))
 
 # Loads object to R environment
 copo_dataset <- readRDS(file.path(tempdir(), "copo_dataset.RDS"))

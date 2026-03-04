@@ -15,26 +15,28 @@ init_fmetrics(
   min_rate = 0.5,
   window = 5,
   ncores = 1,
+  tag = "",
+  export = NULL,
   silent = FALSE
 )
 }
 \arguments{
 \item{raster}{If \code{is_series = FALSE}, a list of two objects of class 'SpatRaster',
-or two paths to two raster layers, with tree cover and forest loss from
-Global Forest Watch databases. If \code{is_series = TRUE}, an object of class 'SpatRaster', or a path
+or two paths to two raster layers, with tree canopy cover and forest cover loss from
+Global Forest Watch datasets. If \code{is_series = TRUE}, an object of class 'SpatRaster', or a path
 to a raster layer, with a cover time-series. See Details.}
 
 \item{is_series}{Logical. If \code{FALSE} (default), it is expected that the raster
 layers provided in \code{raster} were obtained from Global Forest Watch databases.
 If \code{TRUE}, it is expected that a forest cover time-series is provided in \code{raster}. See Details.}
 
-\item{is_continuous}{Logical. If \code{FALSE} (default) it is expected that the provided forest
+\item{is_continuous}{Logical. If \code{FALSE} (default) it is expected that the provided
 cover series in \code{raster} contains binary raster layers. If \code{TRUE}, it is expected that
-the provided raster series has continuous values of forest cover. Ignored if
+the provided cover series has continuous values of forest cover. Ignored if
 \code{is_series = FALSE}. See Details.}
 
-\item{min_treecover}{A number (percentage) depicting the minimum percentage of tree
-cover to be considered as "forest". Default is 10. Ignored if \code{is_series = TRUE}. See Details.}
+\item{min_treecover}{A number (percentage) depicting the minimum percentage of tree canopy
+cover to be considered as "forest" when using Global Forest Watch datasets. Default is 10. Ignored if \code{is_series = TRUE}. See Details.}
 
 \item{aggregation}{A numeric vector of length 2, depicting the first and second
 magnitude of aggregation. See Details.}
@@ -53,15 +55,19 @@ frontier activeness. Default is 5. See Details.}
 
 \item{ncores}{Numbers of cores to parallelize processes. Default is 1.}
 
+\item{export}{If \code{NULL} (default), the object will not be exported. Otherwise, a string with the path name of the file where the object will be saved.}
+
 \item{silent}{Logical. If \code{TRUE}, suppresses messages. Default is \code{FALSE}.}
 }
 \value{
-An object of class 'init_FrontierMetric', containing the structured dataset to
-calculate frontier metrics with \code{\link[=fmetrics]{fmetrics()}}.
+An object of class 'init_FrontierMetric', containing a structured dataset to
+calculate frontier metrics with \code{\link[=fmetrics]{fmetrics()}}. If a file path is provided in
+argument \code{export}, the object will be exported as a .RDS object using \code{saveRDS()}. This is
+useful to continue with the work in a future R session.
 }
 \description{
-Based on inputs of tree cover and forest loss from Global Forest Watch database, or
-on a custom forest cover time-series, generates a structured dataset that can be used as the main input to calculate frontier
+Based on inputs of tree canopy cover and forest cover loss from Global Forest Watch database, or
+on a custom series of forest cover, generates a structured dataset to be used as the main input to calculate frontier
 metrics with \code{\link[=fmetrics]{fmetrics()}}.
 }
 \details{
@@ -70,7 +76,7 @@ Deforestation frontier metrics were initially developed to be calculated using G
 \code{FALSE}, the option by default. Then, a list with two main raster layers from this source must be provided,
 in the following order:
 
-(1) a raster layer (class 'SpatRaster' or a path to a raster layer) of initial forest cover in year 2000.
+(1) a raster layer (class 'SpatRaster' or a path to a raster layer) of initial tree canopy cover in year 2000.
 The values for this raster layer typically ranges between 0 and 100, depicting
 the percentage of tree cover of each individual cell (at a resolution of ~30m).
 
@@ -79,22 +85,24 @@ and 2024. This is a single raster layer where 0 indicates no loss, while values 
 represent forest loss occurring in years 2001, 2002, 2003, and so on.
 
 Both raster layers can be previously downloaded and processed with \code{\link[=get_gfw]{get_gfw()}}, which will
-access GFW sources. See \code{?get_gfw} for details. The user must also define a minimum
-percentage of tree cover (in argument \code{min_treecover}) for a cell to be considered
-"forest". By default, this is 10\%.
+access GFW sources. See \code{?get_gfw} for details.
+
+The user must also define a minimum percentage of tree canopy cover (in argument \code{min_treecover})
+for a cell to be considered "forest". By default, this is 10\%. This parameter will impact on the
+raster layer of initial forest cover in baseline year.
 
 The argument \code{time_frame} must represent the first and last year of the time-series.
 By default, \code{\link[=get_gfw]{get_gfw()}} downloads forest cover in the year 2000 (as provided by GFW datasets), so \code{time_frame} equals
-\code{c(2000, 2024)}. If an year different than 2000 is defined, the function will calculate the
-forest cover for the provided year, by subtracting the accumulated forest loss from the
+\code{c(2000, 2024)}. If an year different than 2000 is provided, the function will calculate the
+forest cover for this year, by subtracting the accumulated forest loss from the
 layer of forest cover in 2000 until the provided year. Note that forest gain is
 not considered in any step.
 
 Alternatively, a custom raster layer representing a time-series of
 forest cover can be provided. If so, \code{is_series} must equal \code{TRUE}, and
 a raster of multiple layers must be provided in argument \code{raster}.
-Within this object, each layer must be binary, representing the amount of forest cover for
-each consecutive year of the analyzed time series. A cell of value 1 will be
+Within this object, each layer can be binary, representing the presence of forest for
+each consecutive year of the time series. A cell with value 1 will be
 considered as covered by forest, while 0 will be considered as a different
 cover. Alternatively, each layer of the raster series can be continuous,
 representing a continuous value of forest cover in km², and argument
@@ -109,20 +117,20 @@ datasets, and excluding the process of forest gain. This could be relevant for t
 calculation of some of these metrics, if a custom time-series of forest cover is
 provided, and the process of forest gain is considered within this time-series. In
 addition, these metrics where initially thought for the process of forest loss in
-tropical and subtropiccal regions. Any other use for a different cover or region
+tropical and subtropical regions. Any other use for a different cover or region
 should be applied with caution, and these metrics might need particular adjustments.
 }
 
 Forest cover and forest loss data can be aggregated, which is recommended.
 Aggregation is done in two steps. First, cells are aggregated using the first
 value of the aggregation argument, which represents the number of cells to merge
-in each direction (horizontal and vertical). In this step, the values of forest cover in the baseline year of all
+in each horizontal and vertical directions. In this step, the values of forest cover in the baseline year of all
 included cells are summed, as well as the amount of forest loss in subsequent years.
 Second, the newly aggregated cells are further
 grouped using the second value of the aggregation argument. At this stage,
 each cell from the initial aggregation is merged into larger cells,
 which will serve as the basis for calculating frontier metrics. Since GFW raster layers have a resolution of approximately 30m (at the equator),
-setting \code{aggregation = c(10, 10)} (default setting) will: (1) aggregate 10 cells both horizontally
+setting \code{aggregation = c(10, 10)} (default setting) will: (1) aggregate 10 cells horizontally
 and vertically, producing cells of
 ~300m, and (2) further group these newly aggregated cells by a factor of
 10, creating larger cells with a resolution of ~3000m. For instance, setting
@@ -133,26 +141,27 @@ Frontiers are defined as cells that meet two criteria: (1) they have a minimum
 percentage of forest cover (\code{min_cover}) and (2) they have a minimum average
 annual forest loss rate in a given temporal window (\code{min_rate}). By default, these
 values take 5\% and 0.5\%, respectively (as in Buchadas et al. 2022), but they could
-take other values. Those cells
+take different values. Those cells
 that do not meet these criteria are not considered frontiers and thus excluded from the analysis. Also, by default
 the temporal window is set to 5 years (\code{window}), but it could also be set to a different
-number of years (e.g. 2, 3, 7 or 9 years).
+number of years (e.g. 2, 3, 7, 9 years).
 }
 \examples{
 \dontrun{
 # Downloads raster layers generated with function get_gfw()
 # Tree cover
-curl::curl_download(frontiermetrics_data[2], "tree_cover.tif")
+curl::curl_download(frontiermetrics_data[3], "tree_cover.tif")
 # Forest loss
-curl::curl_download(frontiermetrics_data[3], "loss_year.tif")
+curl::curl_download(frontiermetrics_data[4], "loss_year.tif")
 
 # Loads raster layers generated with function get_gfw()
 rast_cover <- terra::rast("tree_cover.tif")
 rast_loss <- terra::rast("loss_year.tif")
 
 # Generates structured object
-copo_dataset <- init_fmetrics(raster = list(gfw_cover, gfw_loss),
+copo_dataset <- init_fmetrics(raster = list(rast_cover, rast_loss),
                               time_frame = c(2000, 2024),
+                              tag = "Copo National Park",
                               ncores = 1)
 
 # Shows basic information of the object

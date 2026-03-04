@@ -4,14 +4,16 @@
 \alias{fmetrics_summary}
 \title{Calculates summary statistics of frontier metrics}
 \usage{
-fmetrics_summary(x, metrics = "all")
+fmetrics_summary(x, metrics = "all", show_plots = TRUE)
 }
 \arguments{
 \item{x}{Object of class 'FrontierMetric' generated with \code{\link[=fmetrics]{fmetrics()}}.}
 
-\item{metrics}{Frontier metrics to consider. Options include those calculated
-frontier metrics (including user-defined metrics) or "all" to calculate all frontier
-metrics available within \code{x}. Default is "all".}
+\item{metrics}{Frontier metrics to consider. Options include one or more metrics contained in \code{x},
+or "all" to calculate all frontier metrics available within \code{x}. Default is "all".}
+
+\item{show_plots}{Logical. If \code{TRUE} (default), histograms will be plotted when
+running the function.}
 }
 \value{
 A list with three elements:
@@ -20,10 +22,13 @@ A list with three elements:
 (3) a ggplot object with histograms of frontier metrics.
 }
 \description{
-Calculates basic statistics of continuous values of frontier metrics, plots
-histograms, and calculates the total area of each discrete class of each frontier metric.
+Calculates statistics of continuous values of frontier metrics, plots
+histograms, and calculates the total area of each discrete class of frontier metrics.
 }
 \details{
+Access to statistics once generated the object can be done with \verb{@summary_stats} and \verb{@classes_areas}.
+To access and plot the histograms, use \verb{@hists}.
+
 User-defined metrics will not be considered.
 }
 \examples{
@@ -36,6 +41,6 @@ summ@summary_stats
 # Access to classes areas
 summ@classes_areas
 
-# Access and plotting of histograms
+# Plotting of histograms
 summ@hists
 }

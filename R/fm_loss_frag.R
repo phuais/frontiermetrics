@@ -1,10 +1,15 @@
-calc_fm_loss_frag <- function(x, classes_sub, ncores){
+calc_fm_loss_frag <- function(x, classes_sub, ncores, silent){
 
   if(ncores > 1){
-    if (!requireNamespace("snowfall", quietly = TRUE)) {
-      message("Package 'snowfall' must be installed for parallel processing.")
-      return(invisible(NULL))
+    if(!requireNamespace("future", quietly = TRUE) ||
+        !requireNamespace("future.apply", quietly = TRUE)) {
+      stop("Packages 'future' and 'future.apply' must be installed for parallel processing.")
     }
+
+    if(!silent) cat(paste0(", running in parallel (", ncores, " workers)"))
+    old_plan <- future::plan()
+    on.exit(future::plan(old_plan), add = TRUE)
+    future::plan(future::multisession, workers = ncores)
   }
 
   # Functions to get fragmentation metric
@@ -16,7 +21,6 @@ calc_fm_loss_frag <- function(x, classes_sub, ncores){
   get.ed <- function(data_input, x){
     total_cells <- length(data_input[[2]])
     ras <- vector("list", total_cells)
-    reso_vec <- vector("list", total_cells)
     for(j in 1:total_cells){
       spgdssample <- data_input[[1]][which(data_input[[1]]$id_cell == data_input[[2]][[j]]), ]
       spgdssample <- spgdssample[order(spgdssample$y_1, decreasing = T), ]
@@ -41,7 +45,6 @@ calc_fm_loss_frag <- function(x, classes_sub, ncores){
 
       # Get resolution of cell (in meters)
       side_cells <- sqrt(nrow(coordi))
-      reso_vec[[j]] <- c(x_width/side_cells, y_width/side_cells)
 
       ras[[j]] <- vector("list", 2)
       ras[[j]][[1]] <- c(x_width/side_cells, y_width/side_cells)
@@ -54,32 +57,23 @@ calc_fm_loss_frag <- function(x, classes_sub, ncores){
     return(data.table(id = data_input[[2]], ed = ed))
   }
 
-  if(ncores > 1){
-    # Run in parallel
-    message(paste0("Running in parallel: ", ncores, " CPUs"))
-    snowfall::sfSetMaxCPUs(ncores)
-    snowfall::sfInit(parallel = T, cpus = ncores, type = "SOCK")
-    snowfall::sfLibrary(terra)
-    snowfall::sfLibrary(data.table)
-    snowfall::sfLibrary(landscapemetrics)
-    snowfall::sfExport("ed_func")
-  }
-
   ds_ed_years <- data.table()
   years_lab <- x@time_frame[1]:x@time_frame[2]
+  #if(!silent) pb <- txtProgressBar(min = 0, max = length(years_lab), style = 3, width = 50)
+  if(!silent) cat(paste0("  Forest loss fragmentation - 0/", length(years_lab)))
   for(year in 0:(x@time_frame[2]-x@time_frame[1]-1)){
-    cat("\r> Processing year: ", years_lab[year+2], sep = "")
     # selects id and coordinates of smaller cells
     dsfl <- x@data[, c("id_cell", "x_1", "y_1"), with = F]
     dsfl$Flosssum <- rowSums(x@data[, 8:(8 + year)])
     uu <- unique(dsfl[[1]])
-    if(ncores > 1){
+
+    if (ncores > 1) {
       subs <- split(uu, cut(seq_along(uu), ncores, labels = FALSE))
       listi <- list()
       for(i in 1:length(subs)){
         listi[[i]] <- list(dsfl[which(dsfl[[1]] %in% subs[[i]]), ], subs[[i]])
       }
-      croppi <- snowfall::sfClusterApplyLB(listi, get.ed, x)
+      croppi <- future.apply::future_lapply(listi, get.ed, x, future.seed = TRUE)
     } else {
       subs <- list(uu)
       listi <- list()
@@ -96,8 +90,10 @@ calc_fm_loss_frag <- function(x, classes_sub, ncores){
     } else {
       ds_ed_years <- cbind(ds_ed_years, ds_ed[, 2])
     }
+    #if(!silent) setTxtProgressBar(pb, year)
+    if(!silent) cat("\r  Forest loss fragmentation - ", year+1, "/", length(years_lab), sep = "")
   }
-  if(ncores > 1) snowfall::sfStop()
+  #if(!silent) close(pb)
 
   ds_ed_years$loss_frag <- apply(ds_ed_years[, 2:ncol(ds_ed_years)], 1, max)
   ds_ed_years <- ds_ed_years[, c("id", "loss_frag"), with = F]
@@ -108,20 +104,8 @@ calc_fm_loss_frag <- function(x, classes_sub, ncores){
   ds_ed_years$loss_frag.c <- cut(ds_ed_years$loss_frag, brks, labels = classes_sub[[2]])
   ds_ed_years$loss_frag.c <- factor(ds_ed_years$loss_frag.c, levels = rev(classes_sub[[2]]))
 
-  out <- new("FrontierMetric",
-             metrics = "loss_frag",
-             ud_metrics = "",
-             time_frame = x@time_frame,
-             data = as.data.table(ds_ed_years),
-             extent = x@extent,
-             grain = x@grain,
-             aggregation = x@aggregation,
-             min_treecover = x@min_treecover,
-             min_cover = x@min_cover,
-             min_rate = x@min_rate,
-             window = x@window,
-             archetypes = data.frame(),
-             excluded_cells = x@excluded_cells)
+  out <- list(metrics = "loss_frag",
+              data = as.data.table(ds_ed_years))
 
   return(out)
 }

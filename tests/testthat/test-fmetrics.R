@@ -1,6 +1,6 @@
 test_that("loads init_FrontierMetric and creates FrontierMetric", {
   expect_s4_class({
-    curl::curl_download(frontiermetrics_data[4], file.path(tempdir(), "copo_dataset.RDS"))
+    curl::curl_download(frontiermetrics_data[5], file.path(tempdir(), "copo_dataset.RDS"))
     copo_dataset <- readRDS(file.path(tempdir(), "copo_dataset.RDS"))
     copo_metrics2 <- fmetrics(copo_dataset, metrics = c("baseline", "speed", "left",
                                                         "onset", "activeness", "left"),
@@ -40,7 +40,7 @@ test_that("loads FrontierMetric, creates summary and generates plot", {
 
   expect_equal({
     summ <- fmetrics_summary(copo_metrics)
-    unique(class(summ@summary_stats), class(summ@classes_areas))
+    unique(class(summ$summary_stats), class(summ$classes_areas))
   }, "data.frame")
 
   expect_s3_class({

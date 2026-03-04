@@ -13,9 +13,10 @@ ff_plot_raster <- function(df, df_excluded, fill, what, title, aspect, extent,
                          ggplot2::aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
                          fill = background[1], color = background[1]) +
       ggplot2::geom_tile(data = df_excluded, ggplot2::aes(x = x_cell, y = y_cell), na.rm = T, fill = background[2]) +
-      ggplot2::geom_tile(data = df, ggplot2::aes(x = x_cell, y = y_cell, fill = get(fill)), na.rm = T) +
+      #ggplot2::geom_tile(data = df, ggplot2::aes(x = x_cell, y = y_cell, fill = get(fill)), na.rm = T) +
+      ggplot2::geom_tile(data = df, ggplot2::aes(x = x_cell, y = y_cell, fill = .data[[fill]])) +
       ggplot2::ggtitle(title) +
-      viridis::scale_fill_viridis(name = NULL, option = palette, direction = direction) +
+      viridis::scale_fill_viridis(name = NULL, option = palette, direction = direction, na.value = "white") +
       # ggplot2::scale_fill_distiller(palette = "YlGnBu", name = NULL, na.value = "white") +
       ggplot2::scale_x_continuous(name = NULL, labels = NULL) +
       ggplot2::scale_y_continuous(name = NULL, labels = NULL) +
@@ -29,7 +30,7 @@ ff_plot_raster <- function(df, df_excluded, fill, what, title, aspect, extent,
                          ggplot2::aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
                          fill = background[1], color = background[1]) +
       ggplot2::geom_tile(data = df_excluded, ggplot2::aes(x = x_cell, y = y_cell), na.rm = T, fill = background[2]) +
-      ggplot2::geom_tile(data = df, ggplot2::aes(x = x_cell, y = y_cell, fill = get(fill)), na.rm = T) +
+      ggplot2::geom_tile(data = df, ggplot2::aes(x = x_cell, y = y_cell, fill = .data[[fill]]), na.rm = T) +
       ggplot2::ggtitle(title) +
       viridis::scale_fill_viridis(name = NULL, discrete = T,  option = palette, direction = -direction) +
       #ggplot2::scale_fill_brewer(palette = "YlGnBu", direction = 1, name = NULL, na.value = "white") +
@@ -63,7 +64,7 @@ ff_plot_raster <- function(df, df_excluded, fill, what, title, aspect, extent,
                          ggplot2::aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
                          fill = background[1], color = background[1]) +
       ggplot2::geom_tile(data = df_excluded, ggplot2::aes(x = x_cell, y = y_cell), na.rm = T, fill = background[2]) +
-      ggplot2::geom_tile(data = df, ggplot2::aes(x = x_cell, y = y_cell, fill = get(fill)), na.rm = T) +
+      ggplot2::geom_tile(data = df, ggplot2::aes(x = x_cell, y = y_cell, fill = .data[[fill]]), na.rm = T) +
       ggplot2::ggtitle(title) +
       ggplot2::scale_fill_manual(name = NULL, values = custom_colors, labels = names(arch_levels)) +
       #viridis::scale_fill_viridis(name = NULL, discrete = T,  option = "turbo", direction = direction[2]) +
@@ -80,7 +81,7 @@ ff_plot_raster <- function(df, df_excluded, fill, what, title, aspect, extent,
 #' Plots frontier metrics
 #'
 #' Generates maps of frontier metrics based on an object of class 'FrontierMetric'
-#' generated with [fmetrics()]
+#' generated with [fmetrics()].
 #'
 #' @param x Object of class 'FrontierMetric' generated with [fmetrics()]
 #' @param metrics Frontier metrics to be plotted. Options include those calculated
@@ -112,8 +113,17 @@ ff_plot_raster <- function(df, df_excluded, fill, what, title, aspect, extent,
 #' @export
 #'
 #' @details
-#' Plots can depict the continuous values of metrics (`what = "values"`), the discrete
+#' Plots represent the continuous values of metrics (`what = "values"`), the discrete
 #' classes of metrics (`what = "classes"`), or both (`what = "both"`).
+#'
+#' When plotting the onset metric, NA values may occur in some study areas.
+#' These arise when cells are classified as frontiers by [init_fmetrics()],
+#' but no onset year can be assigned according to the metric definition.
+#' For example, a cell may qualify as a frontier because it exhibits an
+#' average forest loss rate of 0.5% over a 5-year period, yet never
+#' experience three consecutive years of forest loss, which is required
+#' to define onset (by default). In such cases, the onset value is undefined (NA).
+#' NA values for this metric are displayed as white cells in the map.
 #'
 #' Archetypes can also be plotted. These can be defined as the combination
 #' of different frontier metric classes that might represent a higher order of
@@ -168,29 +178,31 @@ fmetrics_plot <- function(x,
   # Argument's checking
   environment(check_fmetrics_plot) <- environment()
   chk <- check_fmetrics_plot()
-  if (length(chk[[1]]) > 0)
-    for (w in 1:length(chk[[1]])) {
+  if(length(chk[[1]]) > 0){
+    for(w in 1:length(chk[[1]])){
       warning(strwrap(chk[[1]], prefix = "\n", initial = ""), call. = FALSE)
     }
-  if (length(chk[[2]]) > 0) {
+  }
+  if(length(chk[[2]]) > 0){
     errors <- chk[[2]]
     stop(strwrap(errors, prefix = "\n", initial = "\n"))
   } else {
     if(length(chk) > 2){
       objs <- names(chk)
-      for (i in 3:length(chk)) {
+      for(i in 3:length(chk)){
         assign(objs[i], chk[[i]])
       }
     }
   }
 
   if("all" %in% metrics){
-    metrics <- c(x@metrics, x@ud_metrics)
+    if(x@ud_metrics[1] == ""){
+      metrics <- x@metrics
+    } else {
+      metrics <- c(x@metrics, x@ud_metrics)
+    }
   } else {
     metrics <- unique(metrics)
-    # fmetrics_list <- c("baseline", "baseline_frag", "loss", "loss_frag", "speed",
-    #                    "activeness", "left", "onset")
-    # metrics <- fmetrics_list[fmetrics_list %in% metrics]
   }
 
   notfound <- character()
@@ -325,12 +337,15 @@ fmetrics_plot <- function(x,
   # Plotting user-defined metrics
   if(any(grepl("ud_", metrics))){
     ud_metrics <- metrics[grepl("ud_", metrics)]
+    plots_ud <- vector("list", length(ud_metrics))
     for(i in 1:length(ud_metrics)){
-      plots[[length(plots)+1]] <- ff_plot_raster(x@data, x@excluded_cells,
+      p <- ff_plot_raster(x@data, x@excluded_cells,
                                                  ud_metrics[i], "values", ud_metrics[i],
                                                  aspect, x@extent,
                                                  palette, direction, background)
+      plots_ud[[i]] <- p
     }
+    plots <- append(plots, plots_ud)
   }
 
   if(ncol > length(plots)) ncol <- length(plots)

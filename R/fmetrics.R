@@ -1,19 +1,19 @@
 dt_append <- function(out, foo, ud = FALSE){
   if(!ud){
     if(nrow(out@data) == 0){
-      out@data <- foo@data
-      out@metrics <- foo@metrics
+      out@data <- foo$data
+      out@metrics <- foo$metrics
     } else {
-      out@data <- merge(out@data, foo@data, by = "id_cell", all = T)
-      out@metrics <- append(out@metrics, foo@metrics)
+      out@data <- merge(out@data, foo$data, by = "id_cell", all = T)
+      out@metrics <- append(out@metrics, foo$metrics)
     }
   } else {
     if(nrow(out@data) == 0){
-      out@data <- foo@data
-      out@ud_metrics <- foo@ud_metrics
+      out@data <- foo$data
+      out@ud_metrics <- foo$ud_metrics
     } else {
-      out@data <- merge(out@data, foo@data, by = "id_cell", all = T)
-      out@ud_metrics <- append(out@ud_metrics, foo@ud_metrics)
+      out@data <- merge(out@data, foo$data, by = "id_cell", all = T)
+      out@ud_metrics <- append(out@ud_metrics, foo$ud_metrics)
     }
   }
 
@@ -98,27 +98,30 @@ get_archetypes <- function(out){
 #' @param overwrite Logical. If `TRUE` (default), raster layers files will be overwritten.
 #' @param export_archetypes Logical. If `TRUE` and a path is provided in `dir`,
 #' raster layer of archetypes will also be exported. Default is `FALSE`.
+#' @param summary Logical. If `TRUE` (default), basic summary statistics will be
+#' computed. See Details.
 #' @param ncores Numbers of cores to parallelize processes. Default is 1. See Details.
+#' @param silent Logical. If `TRUE`, suppresses messages. Default is `FALSE`.
 #'
 #' @details
 #' The `metrics` argument specifies which frontier metrics will be calculated. These metrics are computed for each cell and are defined as follows:
 #'
 #' * baseline: The percentage of forest cover in each cell in the first year of the time-frame.
 #' * baseline_frag: The value of edge density (m/ha) in the first year of the time-frame.
-#' * loss: The percentage of total forest loss over the studied time-frame, relative to the baseline forest cover.
+#' * loss: The cumulative forest loss over the study period, expressed in percentage points relative to forest cover in the baseline year.
 #' * loss_frag: The maximum value of edge density (m/ha) per year of the forest loss spatial pattern, within the studied time-frame.
 #' * speed: The maximum rate of forest loss (km²/year) during the studied time-frame.
 #' * activeness: The level of activeness, as discrete categories, according to when the frontier was active
 #' during the period of analysis.
-#' * left: The percentage of forest cover left after at the end of the studied time-series, relative to the
+#' * left: The percentage of forest cover left at the end of the time-frame, relative to the total
 #' area of the cell.
 #' * onset: The year of onset of the deforestation frontier, calculated as the
 #' first year with at least 3 years (by default) of consecutive forest loss.
 #'
 #' Key parameters of "activeness" and "onset" can be changed within the argument `params`.
 #' By default, `params = list(activeness_levels = NULL, onset_min_years = 3)`.  The level
-#' of frontier activeness will depend on the time-windows where the frontier
-#' was active along the time-frame. Time-windows can be visualized, before calculating frontiers,
+#' of frontier activeness will depend on the temporal windows where the frontier
+#' was active along the time-frame. Temporal windows can be visualized, before calculating frontiers,
 #' by inspecting the slot `@temporal_windows` of the object of class 'init_FrontierMetric' generated
 #' with `init_fmetrics()` and provided in argument `x` of `fmetrics()`. For instance,
 #' if we consider the time-frame 2000-2024 and a window of 5 years, the
@@ -155,7 +158,7 @@ get_archetypes <- function(out){
 #' All temporal windows must be considered in the defined activeness levels.
 #'
 #' If `onset_min_years = 3` (default), onset will refer to the first year of the time series
-#' that exhibited forest loss in a number of 3 consecutive years. The user can change this
+#' that exhibited forest loss during 3 consecutive years. The user can change this
 #' parameter to a lower or higher minimum number of years.
 #'
 #' \emph{
@@ -172,8 +175,8 @@ get_archetypes <- function(out){
 #' create an R function (named "ud_" + "metric_name"; e.g. "ud_metric1") that would receive a unique argument `x`, an object of class
 #' `init_FrontierMetric` generated with `init_fmetrics()`, work with the structured
 #' dataset within this object as desired (available in slot `@data`), and return a data.frame
-#' with the values of the metric for each individual cell. See the vignette for details and
-#' an example.
+#' with the values of the metric for each individual cell. See the vignette for details examples on
+#' how this functions can be generated and used.
 #'
 #' In argument `breaks`, the user can define the rules to generate discrete
 #' classes of those continuous metrics, by providing an object of
@@ -193,11 +196,17 @@ get_archetypes <- function(out){
 #' exported as .tif files. Use `dir = ""` to export files to current directory.
 #' GDAL options can be defined in argument `gdal`. See ?terra::writeRaster for details.
 #'
+#' If `summary = TRUE`, a basic statistics summary is computed for the requested
+#' metrics. This includes basic statistics of continuous values of frontier metrics, frequency histograms, and the total area of
+#' each discrete class for each frontier metric. The summary can be accessed through
+#' `@summary`. Histograms can be accessed and plotted through `@summary@hists`.
+#' This summary can also be generated in a subsequent step using [fmetrics_summary()].
+#' User-defined metrics will not be considered for this summary.
+#'
 #' Parallelization is recommended for very large datasets (ncores > 1).
 #' The calculation of the the metric "loss_frag" is the most computationally intensive.
 #' In general, it is advisable to first run the function with `ncores = 1` and see if it is feasible.
-#' If needed, increase the number of cores. The calculation of this particular metric with
-#' parallelization requires the `snowfall` package to be installed.
+#' If needed, increase the number of cores. Parallelization uses packages `future` and `future.apply`.
 #'
 #' @return An object of class 'FrontierMetric', containing a dataset with the calculated frontier metrics
 #' for each individual cell. This object can be passed to [fmetrics_summary()],
@@ -213,7 +222,7 @@ get_archetypes <- function(out){
 #'
 #' @examples
 #' # Downloads example of object of class 'init_FrontierMetric' generated with init_fmetrics()
-#' curl::curl_download(frontiermetrics_data[4], file.path(tempdir(), "copo_dataset.RDS"))
+#' curl::curl_download(frontiermetrics_data[5], file.path(tempdir(), "copo_dataset.RDS"))
 #'
 #' # Loads object to R environment
 #' copo_dataset <- readRDS(file.path(tempdir(), "copo_dataset.RDS"))
@@ -234,22 +243,25 @@ fmetrics <- function(x,
                      gdal = NULL,
                      overwrite = TRUE,
                      export_archetypes = FALSE,
-                     ncores = 1){
+                     summary = TRUE,
+                     ncores = 1,
+                     silent = FALSE){
 
   # Argument's checking
   environment(check_fmetrics) <- environment()
   chk <- check_fmetrics()
-  if (length(chk[[1]]) > 0)
-    for (w in 1:length(chk[[1]])) {
+  if(length(chk[[1]]) > 0){
+    for(w in 1:length(chk[[1]])){
       warning(strwrap(chk[[1]], prefix = "\n", initial = ""), call. = FALSE)
     }
-  if (length(chk[[2]]) > 0) {
+  }
+  if(length(chk[[2]]) > 0){
     errors <- chk[[2]]
     stop(strwrap(errors, prefix = "\n", initial = "\n"))
   } else {
     if(length(chk) > 2){
       objs <- names(chk)
-      for (i in 3:length(chk)) {
+      for(i in 3:length(chk)){
         assign(objs[i], chk[[i]])
       }
     }
@@ -281,11 +293,14 @@ fmetrics <- function(x,
   if("activeness" %in% metrics){
     if(is.null(params$activeness_levels)){
       params$activeness_levels <- list(emerging = x@temporal_windows$window[nrow(x@temporal_windows)],
-                                active = (nrow(x@temporal_windows)-x@window+1):(nrow(x@temporal_windows)-1),
-                                old = 1:(nrow(x@temporal_windows)-x@window))
+                                       active = (nrow(x@temporal_windows)-x@window+1):(nrow(x@temporal_windows)-1),
+                                       old = 1:(nrow(x@temporal_windows)-x@window))
+    } else {
+      if(!all(unlist(params$activeness_levels) %in% x@temporal_windows$window) |
+         anyDuplicated(unlist(params$activeness_levels))){
+        stop("Activeness levels in argument 'params' was not defined properly. See ?fmetrics for details.")
+      }
     }
-    # aca chequear que cuadren years de classes con time frame
-    # me refiero a lineas 53 y 54 de fm_activeness
   }
 
   fmetrics_list <- c("baseline", "baseline_frag", "loss", "loss_frag",
@@ -294,62 +309,92 @@ fmetrics <- function(x,
 
   out <- new("FrontierMetric",
              metrics = "",
+             ud_metrics = "",
              time_frame = x@time_frame,
              data = data.table(),
              extent = x@extent,
-             excluded_cells = x@excluded_cells)
+             grain = x@grain,
+             aggregation = x@aggregation,
+             min_treecover = x@min_treecover,
+             min_cover = x@min_cover,
+             min_rate = x@min_rate,
+             window = x@window,
+             archetypes = data.frame(),
+             excluded_cells = x@excluded_cells,
+             summary = NULL,
+             tag = x@tag)
 
   # Order of metric calculations
   fm_order <- c("baseline", "baseline_frag", "activeness", "speed",
                 "loss", "left", "loss_frag", "onset")
   metrics <- fm_order[fm_order %in% metrics]
 
+  if(!silent) cat("Calculating metrics\n")
+
   if("baseline" %in% metrics){
+    if(!silent) cat("  Baseline")
     foo <- calc_fm_baseline(x, breaks@baseline)
     out <- dt_append(out, foo)
+    if(!silent) cat(" - done\n")
   }
 
   if("baseline_frag" %in% metrics){
-    foo <- calc_fm_baseline_frag(x, breaks@baseline_frag, ncores)
+    if(!silent) cat("  Baseline fragmentation")
+    foo <- calc_fm_baseline_frag(x, breaks@baseline_frag, ncores, silent)
     out <- dt_append(out, foo)
+    if(!silent) cat(" - done\n")
   }
 
   if("activeness" %in% metrics){
+    if(!silent) cat("  Activeness")
     foo <- calc_fm_activeness(x, params$activeness_levels)
     out <- dt_append(out, foo)
+    if(!silent) cat(" - done\n")
   }
 
   if("speed" %in% metrics){
+    if(!silent) cat("  Speed")
     foo <- calc_fm_speed(x, breaks@speed)
     out <- dt_append(out, foo)
+    if(!silent) cat(" - done\n")
   }
 
   if("loss" %in% metrics){
+    if(!silent) cat("  Forest loss")
     foo <- calc_fm_loss(x, breaks@loss)
     out <- dt_append(out, foo)
+    if(!silent) cat(" - done\n")
   }
 
   if("left" %in% metrics){
+    if(!silent) cat("  Forest left")
     foo <- calc_fm_left(x, breaks@left)
     out <- dt_append(out, foo)
+    if(!silent) cat(" - done\n")
   }
 
   if("onset" %in% metrics){
-    foo <- calc_fm_onset(x, params$onset_min_years, ncores)
+    if(!silent) cat("  Onset")
+    foo <- calc_fm_onset(x, params$onset_min_years, ncores, silent)
     out <- dt_append(out, foo)
+    if(!silent) cat(" - done\n")
   }
 
   if("loss_frag" %in% metrics){
-    foo <- calc_fm_loss_frag(x, breaks@loss_frag, ncores)
+    #if(!silent) cat("  Forest loss fragmentation")
+    foo <- calc_fm_loss_frag(x, breaks@loss_frag, ncores, silent)
     out <- dt_append(out, foo)
+    if(!silent) cat(" - done\n")
   }
 
   if(!is.null(ud_metrics)){
+    if(!silent) cat("  User-defined metrics")
     for(ud_f in ud_metrics){
       fm_ds <- do.call(ud_f, list(x = x))
       foo <- ud_metric(x, fm_ds, name = ud_f)
       out <- dt_append(out, foo, ud = TRUE)
     }
+    if(!silent) cat(" - done")
   }
 
   # Add coords and cell area
@@ -374,6 +419,9 @@ fmetrics <- function(x,
     fmetrics_rast(x = out, metrics = metrics,
                   dir = dir, gdal = gdal, overwrite = overwrite)
   }
+
+  # Generate summary?
+  if(summary & length(metrics) > 0) out@summary <- fmetrics_summary(out, show_plots = F)
 
   return(out)
 }

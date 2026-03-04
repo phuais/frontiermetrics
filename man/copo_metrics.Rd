@@ -11,18 +11,13 @@ An object of class \code{FrontierMetric} of length 1.
 copo_metrics
 }
 \description{
-An object of class 'FrontierMetric' generated with \code{\link[=fmetrics]{fmetrics()}} for use in package examples.
-It cointains the values of all available frontier metrics for the surroundings of the
+An object of class 'FrontierMetric' generated with \code{\link[=fmetrics]{fmetrics()}} for its use in examples.
+It contains the values of all available frontier metrics for the surroundings of the
 Copo National Park (Argentina).
 }
 \details{
-The main internal object is a data.frame (accesible through \code{ed_metrics@data}) with information
-about the values of two landscape metrics: "pland" (percentage of landscape) and "ed" (edge density).
-
-The object was created from the MultiLand object named "ernesdesign", which
-received two raster layers from a small portion of the ecoregion "El Chaco" as main inputs. The main rasterlayer
-was provided by the project "MapBiomas Chaco" for the year 2000.
-The extra rasterlayer contained the NDVI values of cells within the same extent of the main rasterlayer, and was provided by Landsat.
+The main internal object is a data frame (accesible through \code{copo_metrics@data}) containing all
+metric values for this study area.
 }
 \seealso{
 See the examples sections of \code{\link[=fmetrics]{fmetrics()}}, \code{\link[=fmetrics_plot]{fmetrics_plot()}}, \code{\link[=fmetrics_summary]{fmetrics_summary()}} and \code{\link[=fmetrics_rast]{fmetrics_rast()}}

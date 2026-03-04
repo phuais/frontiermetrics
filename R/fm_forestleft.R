@@ -31,20 +31,8 @@ calc_fm_left <- function(x, classes_sub){
   fm_ds$left.c <- cut(fm_ds$left, brks, labels = classes_sub[[2]])
   fm_ds$left.c <- factor(fm_ds$left.c, levels = rev(classes_sub[[2]]))
 
-  out <- new("FrontierMetric",
-             metrics = "left",
-             ud_metrics = "",
-             time_frame = x@time_frame,
-             data = as.data.table(fm_ds),
-             extent = x@extent,
-             grain = x@grain,
-             aggregation = x@aggregation,
-             min_treecover = x@min_treecover,
-             min_cover = x@min_cover,
-             min_rate = x@min_rate,
-             window = x@window,
-             archetypes = data.frame(),
-             excluded_cells = x@excluded_cells)
+  out <- list(metrics = "left",
+              data = as.data.table(fm_ds))
 
   return(out)
 }

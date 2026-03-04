@@ -1,6 +1,4 @@
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
 <!-- # frontiermetrics <img src="man/figures/logo.png" align="right" width="150"/> -->
 
 # frontiermetrics
@@ -25,7 +23,7 @@ that function as small landscapes composed of individual cells:
 
 <div style="margin-top: 25px; margin-bottom: 25px;">
 
-<img src="vignettes/img/frontier_definition.jpg" width="100%" style="display: block; margin: auto;" />
+<img src="vignettes/img/frontier_definition.jpg" alt="" width="100%" style="display: block; margin: auto;" />
 
 </div>
 

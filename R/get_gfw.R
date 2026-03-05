@@ -51,7 +51,7 @@
 #' get_gfw(study_area = copo, dir = "copo_tiles")
 #' }
 get_gfw <- function(study_area,
-                    dir = NULL,
+                    dir = ".",
                     mask = TRUE,
                     filenames = c("tree_cover", "loss_year"),
                     overwrite = TRUE,
@@ -186,20 +186,12 @@ get_gfw <- function(study_area,
   tcover_rast <- terra::vrt(paste0(tmp, "/", files[grepl("treecover", files)]))
   tcover_rast <- terra::crop(tcover_rast, study_area)
   if(mask) tcover_rast <- terra::mask(tcover_rast, study_area)
-  if(!is.null(dir)){
-    terra::writeRaster(tcover_rast, file.path(dir, paste0(filenames[1], ".tif")), overwrite = overwrite)
-  } else {
-    terra::writeRaster(tcover_rast, file.path(paste0(filenames[1], ".tif")), overwrite = overwrite)
-  }
+  terra::writeRaster(tcover_rast, file.path(dir, paste0(filenames[1], ".tif")), overwrite = overwrite)
 
   tloss_rast <- terra::vrt(paste0(tmp, "/", files[grepl("lossyear", files)]))
   tloss_rast <- terra::crop(tloss_rast, study_area)
   if(mask) tloss_rast <- terra::mask(tloss_rast, study_area)
-  if(!is.null(dir)){
-    terra::writeRaster(tloss_rast, file.path(dir, paste0(filenames[2], ".tif")), overwrite = overwrite)
-  } else {
-    terra::writeRaster(tloss_rast, file.path(paste0(filenames[2], ".tif")), overwrite = overwrite)
-  }
+  terra::writeRaster(tloss_rast, file.path(dir, paste0(filenames[2], ".tif")), overwrite = overwrite)
 
   # Eliminar carpeta temporal
   unlink(file.path(tmp), recursive = T)

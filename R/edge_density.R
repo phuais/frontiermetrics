@@ -57,8 +57,8 @@ edge_density <- function(x, count_boundary = F, directions = 8){
 
       # get adjacencies
       neighbor_matrix <- rcpp_get_coocurrence_matrix_single(landscape_labeled,
-                                                                               directions = as.matrix(4),
-                                                                               single_class = -999)
+                                                            directions = as.matrix(4),
+                                                            single_class = -999)
 
       # sum of all adjacencies between patch id and non-class patches (-999) converted to edge length
       edge_ik <- (sum(neighbor_matrix[2:nrow(neighbor_matrix), 1])) * resolution_x
@@ -66,16 +66,16 @@ edge_density <- function(x, count_boundary = F, directions = 8){
 
       # get adjacencies
       left_right_neighbours <- rcpp_get_coocurrence_matrix_single(landscape_labeled,
-                                                                                     directions = as.matrix(left_right_matrix),
-                                                                                     single_class = -999)
+                                                                  directions = as.matrix(left_right_matrix),
+                                                                  single_class = -999)
 
       # sum of all adjacencies between patch id and non-class patches (-999) converted to edge length
       edge_ik_left_right <- sum(left_right_neighbours[2:nrow(left_right_neighbours), 1]) * resolution_x
 
       # get adjacencies
       top_bottom_neighbours <- rcpp_get_coocurrence_matrix_single(landscape_labeled,
-                                                                                     directions = as.matrix(top_bottom_matrix),
-                                                                                     single_class = -999)
+                                                                  directions = as.matrix(top_bottom_matrix),
+                                                                  single_class = -999)
 
       # sum of all adjacencies between patch id and non-class patches (-999) converted to edge length
       edge_ik_top_bottom <- sum(top_bottom_neighbours[2:nrow(top_bottom_neighbours), 1]) * resolution_y

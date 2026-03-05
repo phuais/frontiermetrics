@@ -44,7 +44,7 @@
 #' }
 fmetrics_rast <- function(x,
                           metrics = "all",
-                          dir = "",
+                          dir = ".",
                           gdal = NULL,
                           overwrite = TRUE,
                           silent = FALSE){
@@ -69,6 +69,8 @@ fmetrics_rast <- function(x,
     if(!dir.exists(dir)){
       stop("Could not find the provided directory in 'dir'.")
     }
+  } else {
+    dir <- NULL
   }
 
   # Export mask layers of frontiers vs no frontiers and NA as outside study area

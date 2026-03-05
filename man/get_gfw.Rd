@@ -6,7 +6,7 @@
 \usage{
 get_gfw(
   study_area,
-  dir = NULL,
+  dir = ".",
   mask = TRUE,
   filenames = c("tree_cover", "loss_year"),
   overwrite = TRUE,

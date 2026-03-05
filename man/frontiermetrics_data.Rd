@@ -5,7 +5,7 @@
 \alias{frontiermetrics_data}
 \title{URLs to download data to run examples.}
 \format{
-An object of class \code{character} of length 6.
+An object of class \code{character} of length 8.
 }
 \usage{
 frontiermetrics_data

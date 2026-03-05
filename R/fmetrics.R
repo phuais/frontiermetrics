@@ -93,7 +93,7 @@ get_archetypes <- function(out){
 #' @param breaks An object of class 'FrontierMetric_breaks' generated with [breaks_rules()], containing the rules
 #' to define discrete classes for individual frontier metrics. See Details.
 #' @param dir A path to a directory to export raster layers of frontier metrics. If `NULL`,
-#' (default) raster layers will not be exported. See Details.
+#' (default) raster layers will not be exported. If ".", raster layers will be exported to the current directory. See Details.
 #' @param gdal GDAL driver specific datasource creation options. See ?terra::writeRaster for details.
 #' @param overwrite Logical. If `TRUE` (default), raster layers files will be overwritten.
 #' @param export_archetypes Logical. If `TRUE` and a path is provided in `dir`,

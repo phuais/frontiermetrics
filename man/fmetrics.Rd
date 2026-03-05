@@ -33,7 +33,7 @@ frontier and the minimum years to consider for the 'onset' metric. See Details.}
 to define discrete classes for individual frontier metrics. See Details.}
 
 \item{dir}{A path to a directory to export raster layers of frontier metrics. If \code{NULL},
-(default) raster layers will not be exported. See Details.}
+(default) raster layers will not be exported. If ".", raster layers will be exported to the current directory. See Details.}
 
 \item{gdal}{GDAL driver specific datasource creation options. See ?terra::writeRaster for details.}
 

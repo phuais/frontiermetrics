@@ -62,6 +62,8 @@ library(frontiermetrics)
 get_gfw(study_area = copo)
 
 # Downloaded raster layers are loaded to the R environment
+# These files are also available online.
+#    Run frontiermetrics_data[3:4] to see the links
 gfw_cover <- terra::rast("tree_cover.tif")
 gfw_loss <- terra::rast("loss_year.tif")
 ```
@@ -74,6 +76,8 @@ get_gfw(study_area = sierras_chicas,
         filenames = c("tree_cover_sc", "loss_year_sc"))
 
 # Downloaded raster layers are loaded to the R environment
+# These files are also available online.
+#    Run frontiermetrics_data[7:8] to see the links
 gfw_cover_sc <- terra::rast("tree_cover_sc.tif")
 gfw_loss_sc <- terra::rast("loss_year_sc.tif")
 ```
@@ -138,7 +142,7 @@ sc_dataset
 ```
 ```
 Class               : init_FrontierMetric
-Tag                 : Sierras chicas
+Tag                 : Sierras Chicas
 Extent              : -64.719 -64.141 -32.673 -30.34 
 Time-frame          : 2010 - 2024
 Fine grain (°|m)    : 7e-04 | ~83.3
@@ -316,6 +320,7 @@ For instance, let's get the summary for the metric "left" (forest left):
 
 ```{r eval=F}
 summ <- fmetrics_summary(copo_metrics_v2, metrics = "left")
+summ
 ```
 
 ```
@@ -357,9 +362,9 @@ The function `init_fmetrics()` can also receive a custom cover series, besides G
 
 ```{r eval=F}
 # Study area extent
-study_area <- ext(-61.86 - 0.36,-61.86 + 0.36,
-                 -25.81 - 0.36, -25.81 + 0.36)
-study_area <- as.polygons(study_area)
+study_area <- terra::ext(-61.86 - 0.36,-61.86 + 0.36,
+                         -25.81 - 0.36, -25.81 + 0.36)
+study_area <- terra::as.polygons(study_area)
 crs(study_area) <- "EPSG:4326"
 
 curl::curl_download(frontiermetrics_data[6], "cover_series.tif")

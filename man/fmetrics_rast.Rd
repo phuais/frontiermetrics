@@ -7,7 +7,7 @@
 fmetrics_rast(
   x,
   metrics = "all",
-  dir = "",
+  dir = ".",
   gdal = NULL,
   overwrite = TRUE,
   silent = FALSE

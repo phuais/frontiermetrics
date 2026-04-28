@@ -109,9 +109,10 @@ temporal windows for this time-frame will be:\tabular{lll}{
 If \code{activeness_levels = NULL}, frontier activeness will be classified as "emerging" (active
 during temporal window 20), "active" (active during temporal windows 16 to 19) or
 "old" (active during temporal windows 1 to 15). These categories can be changed. For instance,
-if \code{activeness_levels = list(emerging = 19:20, old = 15:18, very_old = 1:14)}, three levels of
+if \code{activeness_levels = list(emerging = 19:20, old = 15:18, very.old = 1:14)}, three levels of
 activeness will be considered, according to the provided temporal windows for each one.
-All temporal windows must be considered in the defined activeness levels.
+All temporal windows must be considered in the defined activeness levels. The names of the
+levels must not include the character '_'.
 
 If \code{onset_min_years = 3} (default), onset will refer to the first year of the time series
 that exhibited forest loss during 3 consecutive years. The user can change this

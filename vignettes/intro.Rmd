@@ -365,7 +365,7 @@ The function `init_fmetrics()` can also receive a custom cover series, besides G
 study_area <- terra::ext(-61.86 - 0.36,-61.86 + 0.36,
                          -25.81 - 0.36, -25.81 + 0.36)
 study_area <- terra::as.polygons(study_area)
-crs(study_area) <- "EPSG:4326"
+terra::crs(study_area) <- "EPSG:4326"
 
 curl::curl_download(frontiermetrics_data[6], "cover_series.tif")
 # Loads raster layers of time-series

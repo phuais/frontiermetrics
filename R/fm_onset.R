@@ -2,8 +2,12 @@ calc_fm_onset <- function(x, classes_sub, ncores, silent){
 
   ff_onset <- function(idcell, x){
     foo <- x@data[x@data$id_cell == idcell, x@fl_cols, with = F]
-    yy_sums <- colSums(foo > 0)
-    onset_year <- which(yy_sums >= classes_sub[[1]])[1]
+    yy <- as.integer(colSums(foo > 0, na.rm = TRUE) > 0)
+    r <- rle(yy)
+    # find first run of 1s with length >= 3
+    i <- which(r$values == 1 & r$lengths >= 3)[1]
+    # starting position/year
+    onset_year <- if(!is.na(i)) sum(r$lengths[seq_len(i - 1)]) + 1 else NA
     if(!is.na(onset_year)) onset_year <- x@time_frame[1] + onset_year
     return(as.numeric(onset_year))
   }

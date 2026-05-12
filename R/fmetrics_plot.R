@@ -99,7 +99,7 @@ ff_plot_raster <- function(df, df_excluded, fill, what, title, aspect, extent,
 #' @param background A vector of two strings with the names of the colors to be used
 #' for the background of the plot. The first depicts the color for the region outside
 #' the range of the study area, while the second depicts the color for those cells
-#' within the study area that did not qualify as frontiers. Default is `c("gray90", "gray64")`.
+#' within the study area that did not qualify as frontiers. Default is `c("white", "gray64")`.
 #' See Details.
 #' @param archetypes A list of archetypes or group of archetypes to be plotted when `what = "archetypes"`.
 #' Each element of the list must be a vector with the names of the archetypes (as
@@ -121,7 +121,7 @@ ff_plot_raster <- function(df, df_excluded, fill, what, title, aspect, extent,
 #' but no onset year can be assigned according to the metric definition.
 #' For example, a cell may qualify as a frontier because it exhibits an
 #' average forest loss rate of 0.5% over a 5-year period, yet never
-#' experience three consecutive years of forest loss, which is required
+#' exhibited at least three cells with forest loss in the same year, which is required
 #' to define onset (by default). In such cases, the onset value is undefined (NA).
 #' NA values for this metric are displayed as white cells in the map.
 #'

@@ -7,7 +7,7 @@
 fmetrics(
   x,
   metrics = "all",
-  params = list(activeness_levels = NULL, onset_min_years = 3),
+  params = list(activeness_levels = NULL, onset_min = 3),
   breaks = breaks_rules(),
   dir = NULL,
   gdal = NULL,
@@ -27,7 +27,7 @@ fmetrics(
 can also be calculated. See Details.}
 
 \item{params}{List of parameters related to the levels of activeness of a
-frontier and the minimum years to consider for the 'onset' metric. See Details.}
+frontier and the minimum number of cells to consider for the 'onset' metric. See Details.}
 
 \item{breaks}{An object of class 'FrontierMetric_breaks' generated with \code{\link[=breaks_rules]{breaks_rules()}}, containing the rules
 to define discrete classes for individual frontier metrics. See Details.}
@@ -71,11 +71,11 @@ during the period of analysis.
 \item left: The percentage of forest cover left at the end of the time-frame, relative to the total
 area of the cell.
 \item onset: The year of onset of the deforestation frontier, calculated as the
-first year with at least 3 years (by default) of consecutive forest loss.
+first year with at least 3 cells (by default) of forest loss.
 }
 
 Key parameters of "activeness" and "onset" can be changed within the argument \code{params}.
-By default, \code{params = list(activeness_levels = NULL, onset_min_years = 3)}.  The level
+By default, \code{params = list(activeness_levels = NULL, onset_min = 3)}.  The level
 of frontier activeness will depend on the temporal windows where the frontier
 was active along the time-frame. Temporal windows can be visualized, before calculating frontiers,
 by inspecting the slot \verb{@temporal_windows} of the object of class 'init_FrontierMetric' generated
@@ -114,9 +114,9 @@ activeness will be considered, according to the provided temporal windows for ea
 All temporal windows must be considered in the defined activeness levels. The names of the
 levels must not include the character '_'.
 
-If \code{onset_min_years = 3} (default), onset will refer to the first year of the time series
-that exhibited forest loss during 3 consecutive years. The user can change this
-parameter to a lower or higher minimum number of years.
+If \code{onset_min = 3} (default), onset will refer to the first year of the time series
+that exhibited forest loss for at least 3 cells within a frontier. The user can change this
+parameter to a lower or higher minimum number cells.
 
 \emph{
 Note that these metrics were initially programmed to work with Global Forest Watch

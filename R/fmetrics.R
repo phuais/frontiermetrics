@@ -89,7 +89,7 @@ get_archetypes <- function(out){
 #' "all" (default) to calculate all available frontier metrics. User-defined metrics
 #' can also be calculated. See Details.
 #' @param params List of parameters related to the levels of activeness of a
-#' frontier and the minimum years to consider for the 'onset' metric. See Details.
+#' frontier and the minimum number of cells to consider for the 'onset' metric. See Details.
 #' @param breaks An object of class 'FrontierMetric_breaks' generated with [breaks_rules()], containing the rules
 #' to define discrete classes for individual frontier metrics. See Details.
 #' @param dir A path to a directory to export raster layers of frontier metrics. If `NULL`,
@@ -116,10 +116,10 @@ get_archetypes <- function(out){
 #' * left: The percentage of forest cover left at the end of the time-frame, relative to the total
 #' area of the cell.
 #' * onset: The year of onset of the deforestation frontier, calculated as the
-#' first year with at least 3 years (by default) of consecutive forest loss.
+#' first year with at least 3 cells (by default) of forest loss.
 #'
 #' Key parameters of "activeness" and "onset" can be changed within the argument `params`.
-#' By default, `params = list(activeness_levels = NULL, onset_min_years = 3)`.  The level
+#' By default, `params = list(activeness_levels = NULL, onset_min = 3)`.  The level
 #' of frontier activeness will depend on the temporal windows where the frontier
 #' was active along the time-frame. Temporal windows can be visualized, before calculating frontiers,
 #' by inspecting the slot `@temporal_windows` of the object of class 'init_FrontierMetric' generated
@@ -158,9 +158,9 @@ get_archetypes <- function(out){
 #' All temporal windows must be considered in the defined activeness levels. The names of the
 #' levels must not include the character '_'.
 #'
-#' If `onset_min_years = 3` (default), onset will refer to the first year of the time series
-#' that exhibited forest loss during 3 consecutive years. The user can change this
-#' parameter to a lower or higher minimum number of years.
+#' If `onset_min = 3` (default), onset will refer to the first year of the time series
+#' that exhibited forest loss for at least 3 cells within a frontier. The user can change this
+#' parameter to a lower or higher minimum number cells.
 #'
 #' \emph{
 #' Note that these metrics were initially programmed to work with Global Forest Watch
@@ -238,7 +238,7 @@ get_archetypes <- function(out){
 fmetrics <- function(x,
                      metrics = "all",
                      params = list(activeness_levels = NULL,
-                                   onset_min_years = 3),
+                                   onset_min = 3),
                      breaks = breaks_rules(),
                      dir = NULL,
                      gdal = NULL,
@@ -305,8 +305,8 @@ fmetrics <- function(x,
   }
 
   if("onset" %in% metrics){
-    if(is.null(params$onset_min_years)){
-      params$onset_min_years <- 3
+    if(is.null(params$onset_min)){
+      params$onset_min <- 3
     }
   }
 
@@ -382,7 +382,7 @@ fmetrics <- function(x,
 
   if("onset" %in% metrics){
     if(!silent) cat("  Onset")
-    foo <- calc_fm_onset(x, params$onset_min_years, ncores, silent)
+    foo <- calc_fm_onset(x, params$onset_min, ncores, silent)
     out <- dt_append(out, foo)
     if(!silent) cat(" - done\n")
   }

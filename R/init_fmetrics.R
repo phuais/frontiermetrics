@@ -1,8 +1,10 @@
-get_FL <- function(i, rast_loss, cell_size, aggregation, years, ncores, is_series, cover_series, silent, pb){
+get_FL <- function(i, time_frame, rast_loss, cell_size, aggregation, years, ncores, is_series, cover_series, silent, pb){
   if(!silent) setTxtProgressBar(pb, i)
   # cat("\r> Processing year ", years[i], " (", i , "/", length(years), ")", sep = "")
   if(!is_series){
-    gwf_loss_tmp <- rast_loss == i
+    # Necessary if time_frame[1] != 2000
+    yy <- time_frame[1] - 2000 + i
+    gwf_loss_tmp <- rast_loss == yy
   } else {
     gwf_loss_tmp <- cover_series[[i]] - cover_series[[i+1]]
   }
@@ -313,10 +315,10 @@ init_fmetrics <- function(raster,
   # Calculating forest loss
 
   years <- (time_frame[1] + 1):time_frame[2]
-
   pb <- txtProgressBar(min = 0, max = length(years), style = 3, width = 50)
   results <- lapply(1:length(years),
                     get_FL,
+                    time_frame,
                     rast_loss,
                     cell_size,
                     aggregation,
@@ -393,7 +395,7 @@ init_fmetrics <- function(raster,
   foo_metrics <- fmetrics(x = out,
                           metrics = c("baseline", "activeness"),
                           params = list(activeness_levels = list(included = T_ranges$window),
-                                        onset_min_years = 3),
+                                        onset_min = 3),
                           breaks = foo_classes,
                           ncores = ncores,
                           silent = T)@data

@@ -89,7 +89,7 @@ test_that("loads init_FrontierMetric and creates FrontierMetric, with paramater 
   expect_s4_class({
     copo_metrics2 <- fmetrics(copo_dataset, metrics = c("baseline", "speed", "left",
                                                         "onset", "activeness", "left"),
-                              params = list(onset_min_years = 4),
+                              params = list(onset_min = 4),
                               silent = T)
     copo_metrics2
   }, "FrontierMetric")

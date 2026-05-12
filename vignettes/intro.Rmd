@@ -234,13 +234,13 @@ copo_dataset@temporal_windows
 
 By default, activeness categories are automatically classified by an internal algorithm into "active", "emerging", or "old". This categorization can be changed by the user. For instance, two categories could be defined: "active" or "emerging", at specific temporal windows: `activeness_levels = list(active = 1:15, emerging = 16:20)`.
 
-A key parameter named `onset_min_years` of the onset metric can also be changed. By default, onset is defined as the first year in the time series in which a frontier exhibits forest loss for 3 consecutive years. This criterion can be made more stringent by increasing the required number of consecutive years. For example, to 5 years instead of 3, by setting `onset_min_years = 5`. Let's run `fmetrics()` with these new parameters:
+A key parameter named `onset_min` of the onset metric can also be changed. By default, onset is defined as the first year in the time series with at least 3 cells showing forest loss within a frontier. This criterion can be made more stringent by increasing the required number of cells. For example, by setting `onset_min = 5`. Let's run `fmetrics()` with these new parameters:
 
 ```{r eval=F}
 copo_metrics_v3 <- fmetrics(x = copo_dataset,
                             metrics = c("activeness", "onset"),
                             params = list(activeness_levels = list(active = 1:15, emerging = 16:20),
-                                          onset_min_years = 5))
+                                          onset_min = 5))
 ```
 
 Also, the argument `breaks` receives the rules to define categorical classes for continuous metrics, which might ease the interpretation of metric values in the study area. By default, the Jenks natural breaks classification is used to classify all naturally continuous metrics, which can be inspected by running `breaks_rules()`:
